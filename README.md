@@ -10,7 +10,7 @@ The module uses ADAL to get Token from Azure AD.
 3. Enjoy
 
 # Examples
-workflow Get-SavedSearches
+``workflow Get-SavedSearches
 {	
 	$OMSCon = Get-AutomationConnection -Name 'stasoutlook'
 	$Token = Get-AADToken -OMSConnection $OMSCon
@@ -23,10 +23,10 @@ workflow Get-SavedSearches
 		-ResourceGroupName $ResourceGroupName `
 		-SubscriptionID $subscriptionId `
 		-Token $Token
-}
+}``
 
 
-workflow Get-RestartedComputers
+``workflow Get-RestartedComputers
 {	
 	$OMSCon = Get-AutomationConnection -Name 'stasoutlook'
 	$Token = Get-AADToken -OMSConnection $OMSCon
@@ -40,5 +40,4 @@ workflow Get-RestartedComputers
 						   -OMSWorkspaceName $OMSWorkspace `
 						   -Query $Query `
 						   -Token $Token
-}
-
+}``
