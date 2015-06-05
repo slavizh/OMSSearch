@@ -48,3 +48,5 @@ workflow Get-RestartedComputers
 						   -Token $Token
 }
 ```
+# Blogpost
+https://cloudadministrator.wordpress.com/2015/06/05/programmatically-search-operations-management-suite/
