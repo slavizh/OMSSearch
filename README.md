@@ -2,6 +2,11 @@
 OMSSearch is a PowerShell module for Azure Automation that will help you execute queries against Microsoft Operations Management Suite.
 The module uses ADAL to get Token from Azure AD.
 
+# Prerequisites
+1. Your OMS workspace is linked to your Azure Subscription
+2. Find your Subscription ID
+3. Find what is the name of the resource group where your OMS workspaces is located. ARM explorer (https://resources.azure.com/) can help you.
+3. Know the name of your OMS workspace in Azure
 # Instructions
 1. Archive all files in a OMSSearch.zip file
 2. Add module to Azure Automation
