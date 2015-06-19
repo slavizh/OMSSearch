@@ -129,6 +129,8 @@ Function Get-OMSSavedSearches {
   }
   return $return
 }
+
+
 Function Execute-OMSSearchQuery {
 
 <# 
@@ -181,6 +183,46 @@ Function Execute-OMSSearchQuery {
 
     else{
     Write-Error "Failed to execute query. Check parameters."
+  }
+  return $return
+}
+
+
+Function Get-OMSWorkspace {
+<# 
+ .Synopsis
+  Get OMS Workspaces
+
+ .Description
+  Get OMS Workspaces
+
+ .Example
+  $subscriptionId = "3c1d68a5-4064-4522-94e4-e0378165555e"
+  Get-OMSWorkspace -SubscriptionId $Subscriptionid
+
+#>
+    [CmdletBinding()]
+    PARAM (
+        [Parameter(Mandatory=$true)][string]$SubscriptionID,
+        [Parameter(Mandatory=$true)][String]$Token
+
+    )
+    $uri = "https://management.azure.com/subscriptions/" + $SubscriptionID + "/providers/microsoft.operationalinsights/workspaces?api-version=2014-10-10"
+    $headers = @{"Authorization"=$Token;"Accept"="application/json"}
+    $headers.Add("Content-Type","application/json")
+    $result = Invoke-WebRequest -Method Get -Uri $uri -Headers $headers -UseBasicParsing
+    if($result.StatusCode -ge 200 -and $result.StatusCode -le 399){
+      if($result.Content -ne $null){
+        $json = (ConvertFrom-Json $result.Content)
+        if($json -ne $null){
+          $return = $json
+          if($json.value -ne $null){$return = $json.value}
+        }
+      }
+    }
+
+    else{
+    Write-Error "Failed to get OMS Workspaces. Check parameters."
   }
   return $return
 }
