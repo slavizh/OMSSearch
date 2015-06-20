@@ -197,8 +197,9 @@ Function Get-OMSWorkspace {
   Get OMS Workspaces
 
  .Example
-  $subscriptionId = "3c1d68a5-4064-4522-94e4-e0378165555e"
-  Get-OMSWorkspace -SubscriptionId $Subscriptionid
+  $SubscriptionId = "3c1d68a5-4064-4522-94e4-e0378165555e"
+  $Token = Get-AADToken -OMSConnection $OMSCon
+  Get-OMSWorkspace -SubscriptionId $Subscriptionid -Token $Token
 
 #>
     [CmdletBinding()]
@@ -222,7 +223,7 @@ Function Get-OMSWorkspace {
     }
 
     else{
-    Write-Error "Failed to get OMS Workspaces. Check parameters."
+    Write-Error 'Failed to get OMS Workspaces. Check parameters.'
   }
   return $return
 }
