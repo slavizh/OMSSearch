@@ -129,8 +129,6 @@ Function Get-OMSSavedSearches {
   }
   return $return
 }
-
-
 Function Execute-OMSSearchQuery {
 
 <# 
@@ -148,21 +146,35 @@ Function Execute-OMSSearchQuery {
   $ResourceGroupName = "oi-default-east-us"
   $OMSWorkspace = "Test"	
   $Query = "shutdown Type=Event EventLog=System Source=User32 EventID=1074 | Select TimeGenerated,Computer"
+  $NumberOfResults = 150
+  $StartTime = (((get-date)).AddHours(-6).ToUniversalTime()).ToString("yyyy-MM-ddTHH:mm:ss:fffZ")
+  $EndTime = ((get-date).ToUniversalTime()).ToString("yyyy-MM-ddTHH:mm:ss:fffZ")
   Execute-OMSSearchQuery -SubscriptionID $subscriptionId -ResourceGroupName $ResourceGroupName  -OMSWorkspaceName $OMSWorkspace -Query $Query -Token $Token
+  Execute-OMSSearchQuery -SubscriptionID $subscriptionId -ResourceGroupName $ResourceGroupName  -OMSWorkspaceName $OMSWorkspace -Query $Query -Token $Token -Top $NumberOfResults -Start $StartTime -End $EndTime
 
 #>
 
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName="NoDateTime")]
     PARAM (
-        [Parameter(Mandatory=$true)][string]$SubscriptionID,
-        [Parameter(Mandatory=$true)][String]$ResourceGroupName,
-        [Parameter(Mandatory=$true)][String]$OMSWorkspaceName,
-        [Parameter(Mandatory=$true)][String]$Query,
-        [Parameter(Mandatory=$true)][String]$Token
+        [Parameter(Mandatory=$true,ParameterSetName="NoDateTime")][Parameter(Mandatory=$true,ParameterSetName="DateTime")][string]$SubscriptionID,
+        [Parameter(Mandatory=$true,ParameterSetName="NoDateTime")][Parameter(Mandatory=$true,ParameterSetName="DateTime")][String]$ResourceGroupName,
+        [Parameter(Mandatory=$true,ParameterSetName="NoDateTime")][Parameter(Mandatory=$true,ParameterSetName="DateTime")][String]$OMSWorkspaceName,
+        [Parameter(Mandatory=$true,ParameterSetName="NoDateTime")][Parameter(Mandatory=$true,ParameterSetName="DateTime")][String]$Query,
+        [Parameter(Mandatory=$true,ParameterSetName="NoDateTime")][Parameter(Mandatory=$true,ParameterSetName="DateTime")][String]$Token,
+        [Parameter(Mandatory=$false,ParameterSetName="NoDateTime")][Parameter(Mandatory=$false,ParameterSetName="DateTime")][int]$Top,
+        [Parameter(Mandatory=$true,ParameterSetName="DateTime")][ValidatePattern("\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}:\d{3}Z")][string]$Start,
+        [Parameter(Mandatory=$true,ParameterSetName="DateTime")][ValidatePattern("\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}:\d{3}Z")][string]$End
 
     )
-    $uri = "https://management.azure.com/subscriptions/" + $SubscriptionID + "/resourcegroups/" + $ResourceGroupName + "/providers/microsoft.operationalinsights/workspaces/" + $OMSWorkspaceName + "/search?api-version=2014-10-10"
+    $uri = "https://management.azure.com/subscriptions/{0}/resourcegroups/{1}/providers/microsoft.operationalinsights/workspaces/{2}/search?api-version=2014-10-10" -f $SubscriptionID, $ResourceGroupName, $OMSWorkspaceName 
     $QueryArray = @{Query=$Query}
+    if ($Start -and $End) { 
+        $QueryArray+= @{Start=$Start}
+        $QueryArray+= @{End=$End}
+        }
+    if ($Top) {
+        $QueryArray+= @{Top=$Top}
+        }
     $enc = New-Object "System.Text.ASCIIEncoding"
     $body = ConvertTo-Json -InputObject $QueryArray
     $byteArray = $enc.GetBytes($body)
@@ -173,7 +185,10 @@ Function Execute-OMSSearchQuery {
     $result = Invoke-WebRequest -Method Post -Uri $uri -Headers $headers -Body $body -UseBasicParsing
     if($result.StatusCode -ge 200 -and $result.StatusCode -le 399){
       if($result.Content -ne $null){
-        $json = (ConvertFrom-Json $result.Content)
+        [void][System.Reflection.Assembly]::LoadWithPartialName("System.Web.Extensions")        
+        $jsonserial= New-Object -TypeName System.Web.Script.Serialization.JavaScriptSerializer 
+        $jsonserial.MaxJsonLength  =  [int]::MaxValue
+        $json = $jsonserial.DeserializeObject($result.Content)
         if($json -ne $null){
           $return = $json
           if($json.value -ne $null){$return = $json.value}
@@ -186,8 +201,6 @@ Function Execute-OMSSearchQuery {
   }
   return $return
 }
-
-
 Function Get-OMSWorkspace {
 <# 
  .Synopsis
@@ -208,7 +221,7 @@ Function Get-OMSWorkspace {
         [Parameter(Mandatory=$true)][String]$Token
 
     )
-    $uri = "https://management.azure.com/subscriptions/" + $SubscriptionID + "/providers/microsoft.operationalinsights/workspaces?api-version=2014-10-10"
+    $uri = "https://management.azure.com/subscriptions/{0}/providers/microsoft.operationalinsights/workspaces?api-version=2014-10-10" -f $SubscriptionID
     $headers = @{"Authorization"=$Token;"Accept"="application/json"}
     $headers.Add("Content-Type","application/json")
     $result = Invoke-WebRequest -Method Get -Uri $uri -Headers $headers -UseBasicParsing

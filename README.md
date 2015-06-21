@@ -14,6 +14,15 @@ The module uses ADAL to get Token from Azure AD.
 (example stasoutlook.onmicrosoft.com), Username is a UPN account in your Azure AD that has access to OMS and Password is the password for that account.
 3. Enjoy
 
+# Notes
+Execute-OMSSearchQuery cmdlet uses System.Web.Script.Serialization.JavaScriptSerializer which cannot deserialize value bigger than int32. When you return 
+data with Start, End and Top make sure you are returning information in JSON format that is lower than 2,147,483,647 characters.
+
+Start and End paramteres take the date format in UTC like this "yyyy-MM-ddTHH:mm:ss:fffZ". You can use PowerShell to get such values like:
+((get-date).ToUniversalTime()).ToString("yyyy-MM-ddTHH:mm:ss:fffZ")
+(((get-date)).AddHours(-6).ToUniversalTime()).ToString("yyyy-MM-ddTHH:mm:ss:fffZ")
+
+
 # Examples
 ```PowerShell
 workflow Get-SavedSearches
@@ -46,6 +55,41 @@ workflow Get-RestartedComputers
 						   -OMSWorkspaceName $OMSWorkspace `
 						   -Query $Query `
 						   -Token $Token
+}
+```
+```PowerShell
+workflow Get-LastOMSData
+{	
+	$OMSCon = Get-AutomationConnection -Name 'stasoutlook'
+	$Token = Get-AADToken -OMSConnection $OMSCon
+	$subscriptionId = "3c1d68a5-4064-4522-94e4-e03781655555e"
+	$ResourceGroupName = "oi-default-east-us"
+	$OMSWorkspace = "test"	 
+    $Query = '*'
+	$StartTime = (((get-date)).AddHours(-6).ToUniversalTime()).ToString("yyyy-MM-ddTHH:mm:ss:fffZ")
+    $EndTime = ((get-date).ToUniversalTime()).ToString("yyyy-MM-ddTHH:mm:ss:fffZ")
+    Execute-OMSSearchQueryV2 -SubscriptionID $subscriptionId `
+                           -ResourceGroupName $ResourceGroupName    `
+                           -OMSWorkspaceName $OMSWorkspace `
+                           -Query $Query `
+                           -Token $Token `
+						   -top 500 `
+						   -Start $StartTime `
+						   -End $EndTime
+
+						   
+}
+```
+```PowerShell
+workflow Get-MYOMSWorkspace
+{	
+	$OMSCon = Get-AutomationConnection -Name 'stasoutlook'
+    $Token = Get-AADToken -OMSConnection $OMSCon
+    $subscriptionId = "3c1d68a5-4064-4522-94e4-e0378165922e"
+		Get-OMSWorkspace `
+		-SubscriptionID $subscriptionId `
+		-Token $Token
+						   
 }
 ```
 # Blogpost
