@@ -40,10 +40,10 @@ Function Get-AADToken {
         
         [CmdletBinding()]
         PARAM (
-        [Parameter(ParameterSetName='SMAConnection',Mandatory=$true,HelpMessage='Please specify the SMA Connection object')][Alias('Connection','c')][Object]$OMSConnection,
-        [Parameter(ParameterSetName='IndividualParameter',Mandatory=$true,HelpMessage='Please enter the user name to connect to the SharePoint Online site')][Alias('t')][String]$TenantADName,
-        [Parameter(ParameterSetName='IndividualParameter',Mandatory=$true,HelpMessage='Please enter the user name to connect to the SharePoint Online site')][Alias('u')][String]$Username,
-        [Parameter(ParameterSetName='IndividualParameter',Mandatory=$true,HelpMessage='Please enter the password to connect to the SharePoint Online site')][Alias('p')][String]$Password
+        [Parameter(ParameterSetName='SMAConnection',Mandatory=$true)][Alias('Connection','c')][Object]$OMSConnection,
+        [Parameter(ParameterSetName='IndividualParameter',Mandatory=$true)][Alias('t')][String]$TenantADName,
+        [Parameter(ParameterSetName='IndividualParameter',Mandatory=$true)][Alias('u')][String]$Username,
+        [Parameter(ParameterSetName='IndividualParameter',Mandatory=$true)][Alias('p')][String]$Password
         )
 
     $ImportSDK = Import-ADALDll
