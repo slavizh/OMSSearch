@@ -42,8 +42,7 @@ Function Get-AADToken {
         PARAM (
         [Parameter(ParameterSetName='SMAConnection',Mandatory=$true)][Alias('Connection','c')][Object]$OMSConnection,
         [Parameter(ParameterSetName='IndividualParameter',Mandatory=$true)][Alias('t')][String]$TenantADName,
-        [Parameter(ParameterSetName='IndividualParameter',Mandatory=$true)][Alias('u')][String]$Username,
-        [Parameter(ParameterSetName='IndividualParameter',Mandatory=$true)][Alias('p')][String]$Password
+        [Parameter(ParameterSetName='IndividualParameter',Mandatory=$true)][Alias('u')][pscredential]$Credential
         )
 
     $ImportSDK = Import-ADALDll
@@ -59,6 +58,9 @@ Function Get-AADToken {
         $TenantADName   = $OMSConnection.TenantADName
 
 	} else {
+        $Username       = $Credential.Username
+		$Password       = $Credential.Password
+        
 		
 	}
     # Set well-known client ID for Azure PowerShell
@@ -73,11 +75,11 @@ Function Get-AADToken {
     # Set Authority to Azure AD Tenant
     $authority = "https://login.windows.net/$TenantADName"
 
-	$credential = New-Object "Microsoft.IdentityModel.Clients.ActiveDirectory.UserCredential" -ArgumentList $Username,$Password
+	$AADcredential = New-Object "Microsoft.IdentityModel.Clients.ActiveDirectory.UserCredential" -ArgumentList $Username,$Password
     # Create AuthenticationContext tied to Azure AD Tenant
     $authContext = New-Object "Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationContext" -ArgumentList $authority
 
-    $authResult = $authContext.AcquireToken($resourceAppIdURI,$clientId,$credential)
+    $authResult = $authContext.AcquireToken($resourceAppIdURI,$clientId,$AADcredential)
     $Token = $authResult.CreateAuthorizationHeader()
 
 	Return $Token
@@ -110,7 +112,8 @@ Function Get-OMSSavedSearches {
         [Parameter(Mandatory=$true)][String]$Token
 
     )
-    $uri = "https://management.azure.com/subscriptions/" + $SubscriptionID + "/resourcegroups/" + $ResourceGroupName + "/providers/microsoft.operationalinsights/workspaces/" + $OMSWorkspaceName + "/savedSearches?api-version=2014-10-10"
+    $APIVersion = "2015-03-20"
+    $uri = "https://management.azure.com/subscriptions/{0}/resourcegroups/{1}/providers/microsoft.operationalinsights/workspaces/{2}/savedSearches?api-version={3}" -f $SubscriptionID, $ResourceGroupName, $OMSWorkspaceName, $APIVersion
     $headers = @{"Authorization"=$Token;"Accept"="application/json"}
     $headers.Add("Content-Type","application/json")
     $result = Invoke-WebRequest -Method Get -Uri $uri -Headers $headers -UseBasicParsing
@@ -129,7 +132,7 @@ Function Get-OMSSavedSearches {
   }
   return $return
 }
-Function Execute-OMSSearchQuery {
+Function Invoke-OMSSearchQuery {
 
 <# 
  .Synopsis
@@ -166,7 +169,8 @@ Function Execute-OMSSearchQuery {
         [Parameter(Mandatory=$true,ParameterSetName="DateTime")][ValidatePattern("\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}:\d{3}Z")][string]$End
 
     )
-    $uri = "https://management.azure.com/subscriptions/{0}/resourcegroups/{1}/providers/microsoft.operationalinsights/workspaces/{2}/search?api-version=2014-10-10" -f $SubscriptionID, $ResourceGroupName, $OMSWorkspaceName 
+    $APIVersion = "2015-03-20"
+    $uri = "https://management.azure.com/subscriptions/{0}/resourcegroups/{1}/providers/microsoft.operationalinsights/workspaces/{2}/search?api-version={3}" -f $SubscriptionID, $ResourceGroupName, $OMSWorkspaceName, $APIVersion
     $QueryArray = @{Query=$Query}
     if ($Start -and $End) { 
         $QueryArray+= @{Start=$Start}
@@ -240,3 +244,6 @@ Function Get-OMSWorkspace {
   }
   return $return
 }
+New-Alias -Name Execute-OMSSearchQuery -Value Invoke-OMSSearchQuery -Scope Global
+Export-ModuleMember -Alias Execute-OMSSearchQuery
+Export-ModuleMember -Function *

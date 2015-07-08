@@ -22,6 +22,12 @@ Start and End paramteres take the date format in UTC like this "yyyy-MM-ddTHH:mm
 ((get-date).ToUniversalTime()).ToString("yyyy-MM-ddTHH:mm:ss:fffZ")
 (((get-date)).AddHours(-6).ToUniversalTime()).ToString("yyyy-MM-ddTHH:mm:ss:fffZ")
 
+# Versions
+## 5.1.0
+*	Function Execute-OMSSearchQuery renamed to Invoke-OMSSearchQuery. Alias create for Execute-OMSSearchQuery.
+*	Internal function Import-ADALDll is not shown anymore.
+*	Switched to new API version 2015-03-20 that works in all regions
+*	Function Get-AADToken no longer has separate parameters for UserName and Password. Now it is one paramter Credential. Makes the module compliant with PowerShell Gallery.
 
 # Examples
 ```PowerShell
