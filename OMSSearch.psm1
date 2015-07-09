@@ -1,42 +1,4 @@
-﻿Function Import-ADALDll {
-<# 
- .Synopsis
-  Load Load Active Directory Authentication Library (ADAL) Assemblies
-
- .Description
-   Load Load Active Directory Authentication Library (ADAL) Assemblies from either the Global Assembly Cache or from the DLLs located in OMSSearch PS module directory. It will use GAC if the DLLs are already loaded in GAC.
-
- .Example
-  # Load the ADAL Dlls
-   Import-ADALDll
-
-#>
-    
-    $DLLPath = (Get-Module OMSSearch).ModuleBase
-    $arrDLLs = @()
-    $arrDLLs += 'Microsoft.IdentityModel.Clients.ActiveDirectory.dll'
-	$AssemblyVersion = "2.14.0.0"
-	$AssemblyPublicKey = "31bf3856ad364e35"
-    $bSDKLoaded = $true
-
-    Foreach ($DLL in $arrDLLs)
-    {
-        $AssemblyName = $DLL.TrimEnd('.dll')
-        If (!([AppDomain]::CurrentDomain.GetAssemblies() |Where-Object { $_.FullName -eq "$AssemblyName, Version=$AssemblyVersion, Culture=neutral, PublicKeyToken=$AssemblyPublicKey"}))
-		{
-			Write-verbose 'Loading Assembly $AssemblyName...'
-			Try {
-                $DLLFilePath = Join-Path $DLLPath $DLL
-                [Void][System.Reflection.Assembly]::LoadFrom($DLLFilePath)
-            } Catch {
-                Write-Verbose "Unable to load $DLLFilePath. Please verify if the DLLs exist in this location!"
-                $bSDKLoaded = $false
-            }
-		}
-    }
-    $bSDKLoaded
-}
-Function Get-AADToken {
+﻿Function Get-AADToken {
         
         [CmdletBinding()]
         PARAM (
@@ -45,12 +7,6 @@ Function Get-AADToken {
         [Parameter(ParameterSetName='IndividualParameter',Mandatory=$true)][Alias('u')][pscredential]$Credential
         )
 
-    $ImportSDK = Import-ADALDll
-	If ($ImportSDK -eq $false)
-	{
-		Write-Error "Unable to load ADAL DLL. Aborting."
-		Return
-	}
     If ($OMSConnection)
 	{
 		$Username       = $OMSConnection.Username
@@ -60,8 +16,6 @@ Function Get-AADToken {
 	} else {
         $Username       = $Credential.Username
 		$Password       = $Credential.Password
-        
-		
 	}
     # Set well-known client ID for Azure PowerShell
     $clientId = "1950a258-227b-4e31-a9cf-717495945fc2"
@@ -243,6 +197,69 @@ Function Get-OMSWorkspace {
     Write-Error 'Failed to get OMS Workspaces. Check parameters.'
   }
   return $return
+}
+
+Function Get-OMSResourceGroups {
+<# 
+ .Synopsis
+  Get OMS Workspaces
+
+ .Description
+  Get OMS Workspaces
+
+ .Example
+  $SubscriptionId = "3c1d68a5-4064-4522-94e4-e0378165555e"
+  $Token = Get-AADToken -OMSConnection $OMSCon
+  Get-OMSWorkspace -SubscriptionId $Subscriptionid -Token $Token
+
+#>
+    [CmdletBinding()]
+    PARAM (
+        [Parameter(Mandatory=$true)][string]$SubscriptionID,
+        [Parameter(Mandatory=$true)][String]$Token
+
+    )
+    $uri = "https://management.azure.com/subscriptions/{0}/resourceGroups?api-version=2014-04-01" -f $SubscriptionID
+    Write-Verbose "URL: $uri"
+    $headers = @{"Authorization"=$Token;"Accept"="application/json"}
+    $headers.Add("Content-Type","application/json")
+    $result = Invoke-WebRequest -Method Get -Uri $uri -Headers $headers -UseBasicParsing
+    if($result.StatusCode -ge 200 -and $result.StatusCode -le 399){
+      if($result.Content -ne $null){
+        $json = (ConvertFrom-Json $result.Content)
+        if($json -ne $null){
+          $return = $json
+          if($json.value -ne $null){$return = $json.value}
+        }
+      }
+    }
+
+    else{
+    Write-Error 'Failed to get OMS Resource Group. Check parameters.'
+  }
+  #Filter out all none OMS resource groups
+  $arrOMSResourceGroups = @()
+  Foreach ($resourceGroup in $return)
+  {
+    if ($resourceGroup.name -imatch "^OI-Default-")
+    {
+        $arrOMSResourceGroups += $resourceGroup
+    }
+  }
+  Write-Verbose "Total OMS resource groups found: $($arrOMSResourceGroups.count)."
+  ,$arrOMSResourceGroups
+}
+
+#Load Load Active Directory Authentication Library (ADAL) Assemblies
+If (!([AppDomain]::CurrentDomain.GetAssemblies() |Where-Object { $_.FullName -eq "Microsoft.IdentityModel.Clients.ActiveDirectory, Version=2.14.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35"}))
+{
+	Write-verbose 'Microsoft.IdentityModel.Clients.ActiveDirectory...'
+	Try {
+        $ADALDllFilePath = Join-Path $PSScriptRoot "Microsoft.IdentityModel.Clients.ActiveDirectory.dll"
+        Add-Type -path $ADALDllFilePath
+    } Catch {
+        Throw "Unable to load $ADALDllFilePath. Please verify if the DLLs exist in this location!"
+    }
 }
 New-Alias -Name Execute-OMSSearchQuery -Value Invoke-OMSSearchQuery -Scope Global
 Export-ModuleMember -Alias Execute-OMSSearchQuery
