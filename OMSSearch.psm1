@@ -199,18 +199,18 @@ Function Get-OMSWorkspace {
   return $return
 }
 
-Function Get-OMSResourceGroups {
+Function Get-OMSResourceGroup {
 <# 
  .Synopsis
-  Get OMS Workspaces
+  Get Azure Resource Group used by Operational Insights
 
  .Description
-  Get OMS Workspaces
+  Get Azure Resource Group used by Operational Insights
 
  .Example
   $SubscriptionId = "3c1d68a5-4064-4522-94e4-e0378165555e"
   $Token = Get-AADToken -OMSConnection $OMSCon
-  Get-OMSWorkspace -SubscriptionId $Subscriptionid -Token $Token
+  Get-OMSResourceGroup -SubscriptionId $Subscriptionid -Token $Token
 
 #>
     [CmdletBinding()]
