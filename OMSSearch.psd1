@@ -79,8 +79,7 @@ Description = 'This module allows you to get token from Azure AD and execute OMS
 FunctionsToExport = @('Get-AADToken' 
                       'Get-OMSSavedSearches'
                       'Invoke-OMSSearchQuery'
-                      'Get-OMSWorkspace'
-                      'Get-OMSResourceGroup')
+                      'Get-OMSWorkspace')
 
 # Cmdlets to export from this module
 CmdletsToExport = '*'

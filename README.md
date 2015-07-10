@@ -29,13 +29,6 @@ Start and End paramteres take the date format in UTC like this "yyyy-MM-ddTHH:mm
 *	Switched to new API version 2015-03-20 that works in all regions
 *	Function Get-AADToken no longer has separate parameters for UserName and Password. Now it is one paramter Credential. Makes the module compliant with PowerShell Gallery.
 
-## 5.1.1
-*	Additional fields in the SMA / AA Connection object
-*	ADAL DLL is now automatically imported when the module is loaded
-*	Removed the Import-ADALDLL function
-*	Additional function: Get-OMSResourceGroups
-*	Updated examples on some functions
-
 # Examples
 ```PowerShell
 workflow Get-SavedSearches

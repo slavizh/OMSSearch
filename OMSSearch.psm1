@@ -1,20 +1,5 @@
 ﻿Function Get-AADToken {
-<# 
- .Synopsis
-  Get token from Azure AD so you can use the other cmdlets.
-
- .Description
-   Get token from Azure AD so you can use the other cmdlets.
-
- .Example
-    $creds = Get-Credetnial
-    $token = Get-AADToken -Credential $creds
-
-  .Example
-    $OMSCon = Get-AutomationConnection -Name 'stasoutlook'
-    $Token = Get-AADToken -OMSConnection $OMSCon
-
-#>        
+        
         [CmdletBinding()]
         PARAM (
         [Parameter(ParameterSetName='SMAConnection',Mandatory=$true)][Alias('Connection','c')][Object]$OMSConnection,
@@ -214,6 +199,7 @@ Function Get-OMSWorkspace {
   }
   return $return
 }
+
 Function Get-OMSResourceGroup {
 <# 
  .Synopsis
