@@ -22,7 +22,7 @@ limitations under the License.
 RootModule = 'OMSSearch.psm1'
 
 # Version number of this module.
-ModuleVersion = '5.1.0'
+ModuleVersion = '5.1.1'
 
 # ID used to uniquely identify this module
 GUID = '83be58ed-ea1f-4d48-9e82-7bc0b0ae4ded'

@@ -10,6 +10,24 @@
                              {
                                  "IsEncrypted":  false,
                                  "IsOptional":  false,
+                                 "Name":  "SubscriptionID",
+                                 "TypeName":  "System.String"
+                             },
+                             {
+                                 "IsEncrypted":  false,
+                                 "IsOptional":  false,
+                                 "Name":  "ResourceGroupName",
+                                 "TypeName":  "System.String"
+                             },
+                             {
+                                 "IsEncrypted":  false,
+                                 "IsOptional":  false,
+                                 "Name":  "WorkSpaceName",
+                                 "TypeName":  "System.String"
+                             },
+                             {
+                                 "IsEncrypted":  false,
+                                 "IsOptional":  false,
                                  "Name":  "Username",
                                  "TypeName":  "System.String"
                              },
