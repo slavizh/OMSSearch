@@ -19,7 +19,7 @@
         PARAM (
         [Parameter(ParameterSetName='SMAConnection',Mandatory=$true)][Alias('Connection','c')][Object]$OMSConnection,
         [Parameter(ParameterSetName='IndividualParameter',Mandatory=$true)][Alias('t')][String]$TenantADName,
-        [Parameter(ParameterSetName='IndividualParameter',Mandatory=$true)][Alias('u')][pscredential]$Credential
+        [Parameter(ParameterSetName='IndividualParameter',Mandatory=$true)][Alias('cred')][pscredential]$Credential
         )
 
     If ($OMSConnection)
@@ -126,16 +126,16 @@ Function Invoke-OMSSearchQuery {
 
 #>
 
-    [CmdletBinding(DefaultParameterSetName="NoDateTime")]
+    [CmdletBinding()]
     PARAM (
-        [Parameter(Mandatory=$true,ParameterSetName="NoDateTime")][Parameter(Mandatory=$true,ParameterSetName="DateTime")][string]$SubscriptionID,
-        [Parameter(Mandatory=$true,ParameterSetName="NoDateTime")][Parameter(Mandatory=$true,ParameterSetName="DateTime")][String]$ResourceGroupName,
-        [Parameter(Mandatory=$true,ParameterSetName="NoDateTime")][Parameter(Mandatory=$true,ParameterSetName="DateTime")][String]$OMSWorkspaceName,
-        [Parameter(Mandatory=$true,ParameterSetName="NoDateTime")][Parameter(Mandatory=$true,ParameterSetName="DateTime")][String]$Query,
-        [Parameter(Mandatory=$true,ParameterSetName="NoDateTime")][Parameter(Mandatory=$true,ParameterSetName="DateTime")][String]$Token,
-        [Parameter(Mandatory=$false,ParameterSetName="NoDateTime")][Parameter(Mandatory=$false,ParameterSetName="DateTime")][int]$Top,
-        [Parameter(Mandatory=$true,ParameterSetName="DateTime")][ValidatePattern("\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}:\d{3}Z")][string]$Start,
-        [Parameter(Mandatory=$true,ParameterSetName="DateTime")][ValidatePattern("\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}:\d{3}Z")][string]$End
+        [Parameter(Mandatory=$true)][Parameter(Mandatory=$true,ParameterSetName="DateTime")][string]$SubscriptionID,
+        [Parameter(Mandatory=$true)][Parameter(Mandatory=$true,ParameterSetName="DateTime")][String]$ResourceGroupName,
+        [Parameter(Mandatory=$true)][Parameter(Mandatory=$true,ParameterSetName="DateTime")][String]$OMSWorkspaceName,
+        [Parameter(Mandatory=$true)][Parameter(Mandatory=$true,ParameterSetName="DateTime")][String]$Query,
+        [Parameter(Mandatory=$true)][Parameter(Mandatory=$true,ParameterSetName="DateTime")][String]$Token,
+        [Parameter(Mandatory=$false)][Parameter(Mandatory=$false,ParameterSetName="DateTime")][int]$Top,
+        [Parameter(Mandatory=$false)][ValidatePattern("\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}:\d{3}Z")][string]$Start,
+        [Parameter(Mandatory=$false)][ValidatePattern("\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}:\d{3}Z")][string]$End
 
     )
     $APIVersion = "2015-03-20"
@@ -165,6 +165,7 @@ Function Invoke-OMSSearchQuery {
         if($json -ne $null){
           $return = $json
           if($json.value -ne $null){$return = $json.value}
+          Write-Verbose "Number of records returned from search: $($return.count)."
         }
       }
     }
