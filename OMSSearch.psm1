@@ -38,7 +38,7 @@
 
 	Return $Token
 }
-Function Get-OMSSavedSearches {
+Function Get-OMSSavedSearch {
 
 <# 
  .Synopsis
@@ -200,6 +200,61 @@ Function Get-OMSWorkspace {
   return $return
 }
 
+Function Invoke-OMSSavedSearch
+{
+<# 
+ .Synopsis
+  Return the results from a named saved search
+
+ .Description
+   Gets Saved Search results
+
+ .Example
+  # Gets Saved Searches from OMS. Returns results.
+  $OMSCon = Get-AutomationConnection -Name 'OMSCon'
+  $Token = Get-AADToken -OMSConnection $OMSCon
+  $subscriptionId = "3c1d68a5-4064-4522-94e4-e0378165555e"
+  $ResourceGroupName = "oi-default-east-us"
+  $OMSWorkspace = "Test"	
+  Execute-OMSSavedSearch -SubscriptionID $subscriptionId -ResourceGroupName $ResourceGroupName  -OMSWorkspaceName $OMSWorkspace -Token $Token -QueryName 'SavedQueryName'
+
+#>
+
+	[CmdletBinding()]
+	PARAM (
+		[Parameter(Mandatory=$true)][string]$SubscriptionID,
+		[Parameter(Mandatory=$true)][String]$ResourceGroupName,
+		[Parameter(Mandatory=$true)][String]$OMSWorkspaceName,
+		[Parameter(Mandatory=$true)][String]$Token,
+		[Parameter(Mandatory=$true)][String]$queryName,
+		[Parameter(Mandatory=$false,ParameterSetName="NoDateTime")][Parameter(Mandatory=$false,ParameterSetName="DateTime")][int]$Top,
+		[Parameter(Mandatory=$true,ParameterSetName="DateTime")][ValidatePattern("\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}:\d{3}Z")][string]$Start,
+		[Parameter(Mandatory=$true,ParameterSetName="DateTime")][ValidatePattern("\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}:\d{3}Z")][string]$End,
+[Parameter(Mandatory=$false)][String]$API='2015-03-20'
+
+	)
+	$savedSearch = Get-OMSSavedSearch -SubscriptionID $SubscriptionID -ResourceGroupName $ResourceGroupName -OMSWorkspaceName $OMSWorkspaceName -Token $token -API $API
+	$match = $false
+	foreach($q in $savedSearch) {
+		$q.Id -match '\|\s*(?<query>.*)'
+		if ($matches.query -ieq $queryName) {$match=$true;break;}
+	}
+	if(! $match) {
+		write-error "$queryName not found"
+		return $null
+	}
+	if($top) {
+		$results = Invoke-OMSSearchQuery -SubscriptionID $SubscriptionID -ResourceGroupName $ResourceGroupName -OMSWorkspaceName $OMSWorkspaceName -Token $token -Query $q.properties.Query -Top $top -API $API
+	}
+	elseif ($start) {
+		$results = Invoke-OMSSearchQuery -SubscriptionID $SubscriptionID -ResourceGroupName $ResourceGroupName -OMSWorkspaceName $OMSWorkspaceName -Token $token -Query $q.properties.Query -Start $Start -End $End -API $API
+	}
+	else {$results = Invoke-OMSSearchQuery -SubscriptionID $SubscriptionID -ResourceGroupName $ResourceGroupName -OMSWorkspaceName $OMSWorkspaceName -Token $token -Query $q.properties.Query -API $API}
+
+	return $results
+
+}
+
 Function Get-OMSResourceGroup {
 <# 
  .Synopsis
@@ -250,6 +305,68 @@ Function Get-OMSResourceGroup {
   Write-Verbose "Total OMS resource groups found: $($arrOMSResourceGroups.count)."
   ,$arrOMSResourceGroups
 }
+Function Get-ARMAzureSubscription
+{
+<# 
+ .Synopsis
+  Get Azure Subscriptions for current identity
+
+ .Description
+  
+
+ .Example
+  $Token = Get-AADToken -OMSConnection $OMSCon
+  $subscriptions = Get-AzureSubscription -Token $Token
+
+#>
+	[CmdletBinding()]
+	PARAM (
+		[Parameter(Mandatory=$true)][String]$Token,
+        [Parameter(Mandatory=$false)][String]$API='2015-01-01'
+	)
+    $jres = Invoke-ARMGet -Token $token -Uri "https://management.azure.com/subscriptions?api-version=$API"
+    return $jres
+}
+
+
+Function Invoke-ARMGet
+{
+<# 
+ .Synopsis
+ Invokes Azure ARM web service for the specified URI with the given Identity (token) 
+
+ .Description
+ Invokes Azure ARM web service for the specified URI with the given Identity (token) and returns the contents of the json document returned.
+ In case of error returns $null
+
+ .Example
+  $Token = Get-AADToken -OMSConnection $OMSCon
+  $subscriptions = Invoke-ARMGet -Token $token -Uri "https://management.azure.com/subscriptions?api-version=2015-01-01"
+
+#>
+
+	[CmdletBinding()]
+	PARAM (
+		[Parameter(Mandatory=$true)][String]$Token,
+		[Parameter(Mandatory=$true)][String]$uri
+	)	
+    try{
+	    $headers = @{"Authorization"=$Token;"Accept"="application/json"}
+	    $headers.Add("Content-Type","application/json")
+	    #$uri="https://management.azure.com/subscriptions?api-version=2015-01-01"
+	    $result = Invoke-WebRequest -Method Get -Uri $uri -Headers $headers -UseBasicParsing
+	    $json=$null
+	    if($result.StatusCode -ge 200 -and $result.StatusCode -le 399){
+	      if($result.Content -ne $null){
+		    $json = (ConvertFrom-Json $result.Content)
+	      }
+	    }
+    }
+    catch {
+        $json = $null
+    }
+	return $json
+}
 
 #Load Load Active Directory Authentication Library (ADAL) Assemblies
 If (!([AppDomain]::CurrentDomain.GetAssemblies() |Where-Object { $_.FullName -eq "Microsoft.IdentityModel.Clients.ActiveDirectory, Version=2.14.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35"}))
@@ -263,5 +380,7 @@ If (!([AppDomain]::CurrentDomain.GetAssemblies() |Where-Object { $_.FullName -eq
     }
 }
 New-Alias -Name Execute-OMSSearchQuery -Value Invoke-OMSSearchQuery -Scope Global
+#backward compatibility
+New-Alias -Name Get-OMSSavedSearches -Value Get-OMSSavedSearch -Scope Global
 Export-ModuleMember -Alias Execute-OMSSearchQuery
 Export-ModuleMember -Function *
