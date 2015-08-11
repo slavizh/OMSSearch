@@ -23,6 +23,15 @@ Start and End paramteres take the date format in UTC like this "yyyy-MM-ddTHH:mm
 (((get-date)).AddHours(-6).ToUniversalTime()).ToString("yyyy-MM-ddTHH:mm:ss:fffZ")
 
 # Versions
+## 5.1.3
+*	Get-OMSSavedSearches was renamed to Get-OMSSavedSearch . Alias for Get-OMSSavedSearches  is created.
+*	New function Get-ARMAzureSubscription
+*	New function Invoke-OMSSavedSearch 
+*	Authors list in the module manifest is updated
+*	Added APIVersion parameter to almost all cmdlets
+*	Added Get-OMSResourceGroup to be visible
+*	Updated all cmdlet examples with the new APIVersion parameter
+
 ## 5.1.0
 *	Function Execute-OMSSearchQuery renamed to Invoke-OMSSearchQuery. Alias create for Execute-OMSSearchQuery.
 *	Internal function Import-ADALDll is not shown anymore.
