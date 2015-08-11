@@ -39,7 +39,6 @@
 	Return $Token
 }
 Function Get-OMSSavedSearch {
-
 <# 
  .Synopsis
   Gets Saved Searches from OMS workspace
@@ -55,6 +54,7 @@ Function Get-OMSSavedSearch {
   $ResourceGroupName = "oi-default-east-us"
   $OMSWorkspace = "Test"	
   Get-OMSSavedSearches -SubscriptionID $subscriptionId -ResourceGroupName $ResourceGroupName  -OMSWorkspaceName $OMSWorkspace -Token $Token
+  Get-OMSSavedSearches -SubscriptionID $subscriptionId -ResourceGroupName $ResourceGroupName  -OMSWorkspaceName $OMSWorkspace -Token $Token -APIVersion '2015-03-20'
 
 #>
 
@@ -63,10 +63,11 @@ Function Get-OMSSavedSearch {
         [Parameter(Mandatory=$true)][string]$SubscriptionID,
         [Parameter(Mandatory=$true)][String]$ResourceGroupName,
         [Parameter(Mandatory=$true)][String]$OMSWorkspaceName,
-        [Parameter(Mandatory=$true)][String]$Token
+        [Parameter(Mandatory=$true)][String]$Token,
+        [Parameter(Mandatory=$false)][String]$APIVersion='2015-03-20'
 
     )
-    $APIVersion = "2015-03-20"
+    #$APIVersion = "2015-03-20"
     $uri = "https://management.azure.com/subscriptions/{0}/resourcegroups/{1}/providers/microsoft.operationalinsights/workspaces/{2}/savedSearches?api-version={3}" -f $SubscriptionID, $ResourceGroupName, $OMSWorkspaceName, $APIVersion
     $headers = @{"Authorization"=$Token;"Accept"="application/json"}
     $headers.Add("Content-Type","application/json")
@@ -87,7 +88,6 @@ Function Get-OMSSavedSearch {
   return $return
 }
 Function Invoke-OMSSearchQuery {
-
 <# 
  .Synopsis
   Executes Search Query against OMS
@@ -108,6 +108,7 @@ Function Invoke-OMSSearchQuery {
   $EndTime = ((get-date).ToUniversalTime()).ToString("yyyy-MM-ddTHH:mm:ss:fffZ")
   Execute-OMSSearchQuery -SubscriptionID $subscriptionId -ResourceGroupName $ResourceGroupName  -OMSWorkspaceName $OMSWorkspace -Query $Query -Token $Token
   Execute-OMSSearchQuery -SubscriptionID $subscriptionId -ResourceGroupName $ResourceGroupName  -OMSWorkspaceName $OMSWorkspace -Query $Query -Token $Token -Top $NumberOfResults -Start $StartTime -End $EndTime
+  Execute-OMSSearchQuery -SubscriptionID $subscriptionId -ResourceGroupName $ResourceGroupName  -OMSWorkspaceName $OMSWorkspace -Query $Query -Token $Token -Top $NumberOfResults -Start $StartTime -End $EndTime -APIVersion '2015-03-20'
 
 #>
 
@@ -120,10 +121,11 @@ Function Invoke-OMSSearchQuery {
         [Parameter(Mandatory=$true)][Parameter(Mandatory=$true,ParameterSetName="DateTime")][String]$Token,
         [Parameter(Mandatory=$false)][Parameter(Mandatory=$false,ParameterSetName="DateTime")][int]$Top,
         [Parameter(Mandatory=$false)][ValidatePattern("\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}:\d{3}Z")][string]$Start,
-        [Parameter(Mandatory=$false)][ValidatePattern("\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}:\d{3}Z")][string]$End
+        [Parameter(Mandatory=$false)][ValidatePattern("\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}:\d{3}Z")][string]$End,
+        [Parameter(Mandatory=$false)][String]$APIVersion='2015-03-20'
 
     )
-    $APIVersion = "2015-03-20"
+    #$APIVersion = "2015-03-20"
     $uri = "https://management.azure.com/subscriptions/{0}/resourcegroups/{1}/providers/microsoft.operationalinsights/workspaces/{2}/search?api-version={3}" -f $SubscriptionID, $ResourceGroupName, $OMSWorkspaceName, $APIVersion
     $QueryArray = @{Query=$Query}
     if ($Start -and $End) { 
@@ -172,15 +174,17 @@ Function Get-OMSWorkspace {
   $SubscriptionId = "3c1d68a5-4064-4522-94e4-e0378165555e"
   $Token = Get-AADToken -OMSConnection $OMSCon
   Get-OMSWorkspace -SubscriptionId $Subscriptionid -Token $Token
+  Get-OMSWorkspace -SubscriptionId $Subscriptionid -Token $Token -APIVersion '2015-03-20'
 
 #>
     [CmdletBinding()]
     PARAM (
         [Parameter(Mandatory=$true)][string]$SubscriptionID,
-        [Parameter(Mandatory=$true)][String]$Token
+        [Parameter(Mandatory=$true)][String]$Token,
+        [Parameter(Mandatory=$false)][String]$APIVersion='2015-03-20'
 
     )
-    $uri = "https://management.azure.com/subscriptions/{0}/providers/microsoft.operationalinsights/workspaces?api-version=2014-10-10" -f $SubscriptionID
+    $uri = "https://management.azure.com/subscriptions/{0}/providers/microsoft.operationalinsights/workspaces?api-version={1}" -f $SubscriptionID, $APIVersion
     $headers = @{"Authorization"=$Token;"Accept"="application/json"}
     $headers.Add("Content-Type","application/json")
     $result = Invoke-WebRequest -Method Get -Uri $uri -Headers $headers -UseBasicParsing
@@ -199,9 +203,7 @@ Function Get-OMSWorkspace {
   }
   return $return
 }
-
-Function Invoke-OMSSavedSearch
-{
+Function Invoke-OMSSavedSearch {
 <# 
  .Synopsis
   Return the results from a named saved search
@@ -216,7 +218,8 @@ Function Invoke-OMSSavedSearch
   $subscriptionId = "3c1d68a5-4064-4522-94e4-e0378165555e"
   $ResourceGroupName = "oi-default-east-us"
   $OMSWorkspace = "Test"	
-  Execute-OMSSavedSearch -SubscriptionID $subscriptionId -ResourceGroupName $ResourceGroupName  -OMSWorkspaceName $OMSWorkspace -Token $Token -QueryName 'SavedQueryName'
+  Invoke-OMSSavedSearch -SubscriptionID $subscriptionId -ResourceGroupName $ResourceGroupName  -OMSWorkspaceName $OMSWorkspace -Token $Token -QueryName 'SavedQueryName'
+  Invoke-OMSSavedSearch -SubscriptionID $subscriptionId -ResourceGroupName $ResourceGroupName  -OMSWorkspaceName $OMSWorkspace -Token $Token -QueryName 'SavedQueryName' -APIVersion '2015-03-20'
 
 #>
 
@@ -230,31 +233,47 @@ Function Invoke-OMSSavedSearch
 		[Parameter(Mandatory=$false,ParameterSetName="NoDateTime")][Parameter(Mandatory=$false,ParameterSetName="DateTime")][int]$Top,
 		[Parameter(Mandatory=$true,ParameterSetName="DateTime")][ValidatePattern("\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}:\d{3}Z")][string]$Start,
 		[Parameter(Mandatory=$true,ParameterSetName="DateTime")][ValidatePattern("\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}:\d{3}Z")][string]$End,
-[Parameter(Mandatory=$false)][String]$API='2015-03-20'
+        [Parameter(Mandatory=$false)][String]$APIVersion='2015-03-20'
 
 	)
-	$savedSearch = Get-OMSSavedSearch -SubscriptionID $SubscriptionID -ResourceGroupName $ResourceGroupName -OMSWorkspaceName $OMSWorkspaceName -Token $token -API $API
+	$savedSearch = Get-OMSSavedSearch -SubscriptionID $SubscriptionID -ResourceGroupName $ResourceGroupName -OMSWorkspaceName $OMSWorkspaceName -Token $token -APIVersion $APIVersion
 	$match = $false
 	foreach($q in $savedSearch) {
-		$q.Id -match '\|\s*(?<query>.*)'
+		$matchresults=$q.Id -match '\|\s*(?<query>.*)'
 		if ($matches.query -ieq $queryName) {$match=$true;break;}
 	}
 	if(! $match) {
-		write-error "$queryName not found"
+		write-error "Query with name `'$queryName`' was not found."
 		return $null
 	}
-	if($top) {
-		$results = Invoke-OMSSearchQuery -SubscriptionID $SubscriptionID -ResourceGroupName $ResourceGroupName -OMSWorkspaceName $OMSWorkspaceName -Token $token -Query $q.properties.Query -Top $top -API $API
-	}
-	elseif ($start) {
-		$results = Invoke-OMSSearchQuery -SubscriptionID $SubscriptionID -ResourceGroupName $ResourceGroupName -OMSWorkspaceName $OMSWorkspaceName -Token $token -Query $q.properties.Query -Start $Start -End $End -API $API
-	}
-	else {$results = Invoke-OMSSearchQuery -SubscriptionID $SubscriptionID -ResourceGroupName $ResourceGroupName -OMSWorkspaceName $OMSWorkspaceName -Token $token -Query $q.properties.Query -API $API}
+    else {
 
-	return $results
+        $OMSParams = @{            
+        SubscriptionID = $SubscriptionID
+        ResourceGroupName = $ResourceGroupName
+        OMSWorkspaceName = $OMSWorkspaceName 
+        Token = $token 
+        Query =  $q.properties.Query
+        APIVersion = $APIVersion       
+        } 
+        if($top)            
+        {            
+            $OMSParams.add("Top", $top)         
+        }
+        if($start)            
+        {            
+            $OMSParams.add("Start", $start)         
+        } 
+        if($End)            
+        {            
+            $OMSParams.add("End", $End)         
+        }
+    
+        $results =  Invoke-OMSSearchQuery @OMSParams
 
+	    return $results
+    }
 }
-
 Function Get-OMSResourceGroup {
 <# 
  .Synopsis
@@ -267,15 +286,17 @@ Function Get-OMSResourceGroup {
   $SubscriptionId = "3c1d68a5-4064-4522-94e4-e0378165555e"
   $Token = Get-AADToken -OMSConnection $OMSCon
   Get-OMSResourceGroup -SubscriptionId $Subscriptionid -Token $Token
+  Get-OMSResourceGroup -SubscriptionId $Subscriptionid -Token $Token -APIVersion '2014-04-01'
 
 #>
     [CmdletBinding()]
     PARAM (
         [Parameter(Mandatory=$true)][string]$SubscriptionID,
-        [Parameter(Mandatory=$true)][String]$Token
+        [Parameter(Mandatory=$true)][String]$Token,
+        [Parameter(Mandatory=$false)][String]$APIVersion='2014-04-01'
 
     )
-    $uri = "https://management.azure.com/subscriptions/{0}/resourceGroups?api-version=2014-04-01" -f $SubscriptionID
+    $uri = "https://management.azure.com/subscriptions/{0}/resourceGroups?api-version={1}" -f $SubscriptionID,$APIVersion
     Write-Verbose "URL: $uri"
     $headers = @{"Authorization"=$Token;"Accept"="application/json"}
     $headers.Add("Content-Type","application/json")
@@ -305,8 +326,7 @@ Function Get-OMSResourceGroup {
   Write-Verbose "Total OMS resource groups found: $($arrOMSResourceGroups.count)."
   ,$arrOMSResourceGroups
 }
-Function Get-ARMAzureSubscription
-{
+Function Get-ARMAzureSubscription {
 <# 
  .Synopsis
   Get Azure Subscriptions for current identity
@@ -317,20 +337,20 @@ Function Get-ARMAzureSubscription
  .Example
   $Token = Get-AADToken -OMSConnection $OMSCon
   $subscriptions = Get-AzureSubscription -Token $Token
+  $subscriptions = Get-AzureSubscription -Token $Token -APIVersion '2015-03-20'
 
 #>
 	[CmdletBinding()]
 	PARAM (
 		[Parameter(Mandatory=$true)][String]$Token,
-        [Parameter(Mandatory=$false)][String]$API='2015-01-01'
+        [Parameter(Mandatory=$false)][String]$APIVersion='2015-03-20'
 	)
-    $jres = Invoke-ARMGet -Token $token -Uri "https://management.azure.com/subscriptions?api-version=$API"
+    #'2015-01-01'
+    $URI = "https://management.azure.com/subscriptions?api-version={0}" -f $APIVersion
+    $jres = Invoke-ARMGet -Token $token -Uri $URI
     return $jres
 }
-
-
-Function Invoke-ARMGet
-{
+Function Invoke-ARMGet {
 <# 
  .Synopsis
  Invokes Azure ARM web service for the specified URI with the given Identity (token) 
