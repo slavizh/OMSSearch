@@ -23,6 +23,9 @@ Start and End paramteres take the date format in UTC like this "yyyy-MM-ddTHH:mm
 (((get-date)).AddHours(-6).ToUniversalTime()).ToString("yyyy-MM-ddTHH:mm:ss:fffZ")
 
 # Versions
+## 5.1.4
+*	Changed time format for paramaters "Start" and "End" from "yyyy-MM-ddTHH:mm:ss:fffZ" to "yyyy-MM-ddTHH:mm:ss.fffZ". The initial format was incorrect which resulted in false queries.
+
 ## 5.1.3
 *	Get-OMSSavedSearches was renamed to Get-OMSSavedSearch . Alias for Get-OMSSavedSearches  is created.
 *	New function Get-ARMAzureSubscription

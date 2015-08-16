@@ -118,8 +118,8 @@ Function Invoke-OMSSearchQuery {
   $OMSWorkspace = "Test"	
   $Query = "shutdown Type=Event EventLog=System Source=User32 EventID=1074 | Select TimeGenerated,Computer"
   $NumberOfResults = 150
-  $StartTime = (((get-date)).AddHours(-6).ToUniversalTime()).ToString("yyyy-MM-ddTHH:mm:ss:fffZ")
-  $EndTime = ((get-date).ToUniversalTime()).ToString("yyyy-MM-ddTHH:mm:ss:fffZ")
+  $StartTime = (((get-date)).AddHours(-6).ToUniversalTime()).ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
+  $EndTime = ((get-date).ToUniversalTime()).ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
   Invoke-OMSSearchQuery -SubscriptionID $subscriptionId -ResourceGroupName $ResourceGroupName  -OMSWorkspaceName $OMSWorkspace -Query $Query -Token $Token
   Invoke-OMSSearchQuery -SubscriptionID $subscriptionId -ResourceGroupName $ResourceGroupName  -OMSWorkspaceName $OMSWorkspace -Query $Query -Token $Token -Top $NumberOfResults -Start $StartTime -End $EndTime
   Invoke-OMSSearchQuery -SubscriptionID $subscriptionId -ResourceGroupName $ResourceGroupName  -OMSWorkspaceName $OMSWorkspace -Query $Query -Token $Token -Top $NumberOfResults -Start $StartTime -End $EndTime -APIVersion '2015-03-20'
@@ -134,8 +134,8 @@ Function Invoke-OMSSearchQuery {
         [Parameter(Mandatory=$true)][Parameter(Mandatory=$true,ParameterSetName="NoDateTime")][Parameter(Mandatory=$true,ParameterSetName="DateTime")][String]$Query,
         [Parameter(Mandatory=$true)][Parameter(Mandatory=$true,ParameterSetName="NoDateTime")][Parameter(Mandatory=$true,ParameterSetName="DateTime")][String]$Token,
         [Parameter(Mandatory=$false)][Parameter(Mandatory=$false,ParameterSetName="NoDateTime")][Parameter(Mandatory=$false,ParameterSetName="DateTime")][int]$Top,
-        [Parameter(Mandatory=$true,ParameterSetName="DateTime")][ValidatePattern("\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}:\d{3}Z")][string]$Start,
-        [Parameter(Mandatory=$true,ParameterSetName="DateTime")][ValidatePattern("\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}:\d{3}Z")][string]$End,
+        [Parameter(Mandatory=$true,ParameterSetName="DateTime")][ValidatePattern("\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z")][string]$Start,
+        [Parameter(Mandatory=$true,ParameterSetName="DateTime")][ValidatePattern("\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z")][string]$End,
         [Parameter(Mandatory=$false,ParameterSetName="NoDateTime")][Parameter(Mandatory=$false,ParameterSetName="DateTime")][String]$APIVersion='2015-03-20'
 
     )
@@ -230,8 +230,12 @@ Function Invoke-OMSSavedSearch {
   $Token = Get-AADToken -OMSConnection $OMSCon
   $subscriptionId = "3c1d68a5-4064-4522-94e4-e0378165555e"
   $ResourceGroupName = "oi-default-east-us"
-  $OMSWorkspace = "Test"	
+  $OMSWorkspace = "Test"
+  $NumberOfResults = 150
+  $StartTime = (((get-date)).AddHours(-6).ToUniversalTime()).ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
+  $EndTime = ((get-date).ToUniversalTime()).ToString("yyyy-MM-ddTHH:mm:ss.fffZ")	
   Invoke-OMSSavedSearch -SubscriptionID $subscriptionId -ResourceGroupName $ResourceGroupName  -OMSWorkspaceName $OMSWorkspace -Token $Token -QueryName 'SavedQueryName'
+  Invoke-OMSSearchQuery -SubscriptionID $subscriptionId -ResourceGroupName $ResourceGroupName  -OMSWorkspaceName $OMSWorkspace -Token $Token -QueryName 'SavedQueryName' -Top $NumberOfResults -Start $StartTime -End $EndTime
   Invoke-OMSSavedSearch -SubscriptionID $subscriptionId -ResourceGroupName $ResourceGroupName  -OMSWorkspaceName $OMSWorkspace -Token $Token -QueryName 'SavedQueryName' -APIVersion '2015-03-20'
 
 #>
@@ -244,8 +248,8 @@ Function Invoke-OMSSavedSearch {
 		[Parameter(Mandatory=$true)][String]$Token,
 		[Parameter(Mandatory=$true)][String]$queryName,
 		[Parameter(Mandatory=$false,ParameterSetName="NoDateTime")][Parameter(Mandatory=$false,ParameterSetName="DateTime")][int]$Top,
-		[Parameter(Mandatory=$true,ParameterSetName="DateTime")][ValidatePattern("\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}:\d{3}Z")][string]$Start,
-		[Parameter(Mandatory=$true,ParameterSetName="DateTime")][ValidatePattern("\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}:\d{3}Z")][string]$End,
+		[Parameter(Mandatory=$true,ParameterSetName="DateTime")][ValidatePattern("\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z")][string]$Start,
+		[Parameter(Mandatory=$true,ParameterSetName="DateTime")][ValidatePattern("\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z")][string]$End,
         [Parameter(Mandatory=$false)][String]$APIVersion='2015-03-20'
 
 	)
