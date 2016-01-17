@@ -23,6 +23,24 @@ Start and End paramteres take the date format in UTC like this "yyyy-MM-ddTHH:mm
 (((get-date)).AddHours(-6).ToUniversalTime()).ToString("yyyy-MM-ddTHH:mm:ss:fffZ")
 
 # Versions
+## 6.0.0
+*   SMAConnection parameter set changed to OMSConnection in Get-AADToken
+*   IndividualParameter parameter set changed to - DefaultParameterSet - in Get-AADToken
+*   Changes in code for better reading the code - all functions
+*   DefaultParameterSetName used - for all functions
+*   Improved Help for all functions
+*   Changed resourceAppIdURI to https://management.azure.com/
+*   Changed authority to https://login.microsoftonline.com/
+*   Option to authenticate by TenantID or TenantADName 
+*   Added TenantID field in OMSConnection (might not appear if you have previously imported the module in Azure Automation)
+*   Get-Help for parameters added for all functions
+*   Added Name parameter to find individual saved searches in Get-OMSSavedSearch. You can now get a single saved search.
+*   Improved Invoke-OMSSavedSearch algorithm. Now it will find saved search by Name instead by ID. ID can be GUID for some saved searches which previously resulted in faulty results.
+*   Removed function Invoke-ARMGet - Not needed. 
+*   Deprecated Get-ARMAzureSubscription. Official AzureRM cmdlets can be used to get Subscriptions.
+*   new cmdlet - New-OMSSavedSearch
+*   new cmdlet - Remove-OMSSavedSearch
+
 ## 5.1.4
 *	Changed time format for paramaters "Start" and "End" from "yyyy-MM-ddTHH:mm:ss:fffZ" to "yyyy-MM-ddTHH:mm:ss.fffZ". The initial format was incorrect which resulted in false queries.
 

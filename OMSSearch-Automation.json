@@ -9,6 +9,12 @@
                              },
                              {
                                  "IsEncrypted":  false,
+                                 "IsOptional":  true,
+                                 "Name":  "TenantID",
+                                 "TypeName":  "System.String"
+                             },
+                             {
+                                 "IsEncrypted":  false,
                                  "IsOptional":  false,
                                  "Name":  "SubscriptionID",
                                  "TypeName":  "System.String"

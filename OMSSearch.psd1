@@ -22,7 +22,7 @@ limitations under the License.
 RootModule = 'OMSSearch.psm1'
 
 # Version number of this module.
-ModuleVersion = '5.1.4'
+ModuleVersion = '6.0.0'
 
 # ID used to uniquely identify this module
 GUID = '83be58ed-ea1f-4d48-9e82-7bc0b0ae4ded'
@@ -81,8 +81,9 @@ FunctionsToExport = @('Get-AADToken'
                       'Invoke-OMSSearchQuery'
                       'Get-OMSWorkspace'
                       'Invoke-OMSSavedSearch'
-                      'Get-ARMAzureSubscription'
                       'Get-OMSResourceGroup'
+                      'Remove-OMSSavedSearch'
+                      'New-OMSSavedSearch'
                       )
 
 # Cmdlets to export from this module
