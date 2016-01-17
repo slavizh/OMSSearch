@@ -40,6 +40,7 @@ Start and End paramteres take the date format in UTC like this "yyyy-MM-ddTHH:mm
 *   Deprecated Get-ARMAzureSubscription. Official AzureRM cmdlets can be used to get Subscriptions.
 *   new cmdlet - New-OMSSavedSearch
 *   new cmdlet - Remove-OMSSavedSearch
+*   You can use OMSConnection parameter in almost all cmdlets instead of providing individual paramaters like subscriptionID, ResourceGroupName and OMSWorkspaceName
 
 ## 5.1.4
 *	Changed time format for paramaters "Start" and "End" from "yyyy-MM-ddTHH:mm:ss:fffZ" to "yyyy-MM-ddTHH:mm:ss.fffZ". The initial format was incorrect which resulted in false queries.
