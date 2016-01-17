@@ -38,7 +38,7 @@ Start and End paramteres take the date format in UTC like this "yyyy-MM-ddTHH:mm
 *   Improved Invoke-OMSSavedSearch algorithm. Now it will find saved search by Name instead by ID. ID can be GUID for some saved searches which previously resulted in faulty results.
 *   Removed function Invoke-ARMGet - Not needed. 
 *   Deprecated Get-ARMAzureSubscription. Official AzureRM cmdlets can be used to get Subscriptions.
-*   You can use OMSConnection parameter in almost all cmdlets instead of providing individual paramaters like subscriptionID, ResourceGroupName and OMSWorkspaceName
+*   You can use OMSConnection parameter in almost all cmdlets instead of providing individual parameters like subscriptionID, ResourceGroupName and OMSWorkspaceName
 *   new cmdlet - New-OMSSavedSearch
 *   new cmdlet - Remove-OMSSavedSearch
 
