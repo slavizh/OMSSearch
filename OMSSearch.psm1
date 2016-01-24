@@ -26,16 +26,37 @@
         the OMS workspace is located.
 
     .EXAMPLE
-        $creds = Get-Credetnial
         $token = Get-AADToken -TenantADName 'stanoutlook.onmicrosoft.com' -Credential $creds
+        Description
+        -----------
+        Grabs token from Azure AD by Tenant AD Name
 
-    .EXAMPLE
+        Example Variables
+        -----------------
         $creds = Get-Credetnial
-        $token = Get-AADToken -TenantID 'eeb91fce-4be2-4a30-aad8-39e05fefde0' -Credential $creds
+        
 
     .EXAMPLE
-        $OMSCon = Get-AutomationConnection -Name 'stasoutlook'
+        $token = Get-AADToken -TenantID 'eeb91fce-4be2-4a30-aad8-39e05fefde0' -Credential $creds
+        Description
+        -----------
+        Grabs token from Azure AD by Tenant ID
+
+        Example Variables
+        -----------------
+        $creds = Get-Credetnial
+        
+
+    .EXAMPLE
         $Token = Get-AADToken -OMSConnection $OMSCon
+        Description
+        -----------
+        Grabs token from Azure AD by using information from asset of type connection in OMS Automation
+
+        Example Variables
+        -----------------
+        $OMSCon = Get-AutomationConnection -Name 'stasoutlook'
+        
 
     .OUTPUTS
         System.String. Returns token from Azure AD.
@@ -161,26 +182,55 @@ Function Get-OMSWorkspace {
         Azure Resource provider.
 
     .EXAMPLE
-        $OMSCon = Get-AutomationConnection -Name 'OMSCon'
-        $SubscriptionId = "3c1d68a5-4064-4522-94e4-e0378165555e"
-        $Token = Get-AADToken -OMSConnection $OMSCon
         Get-OMSWorkspace -SubscriptionId $Subscriptionid -Token $Token
+        Description
+        -----------
+        Gets all workspaces under Azure subscription by using Subscription ID
 
-    .EXAMPLE
+        Example Variables
+        -----------------
         $OMSCon = Get-AutomationConnection -Name 'OMSCon'
         $SubscriptionId = "3c1d68a5-4064-4522-94e4-e0378165555e"
         $Token = Get-AADToken -OMSConnection $OMSCon
+        
+
+    .EXAMPLE
         Get-OMSWorkspace -SubscriptionId $Subscriptionid -Token $Token -APIVersion '2015-03-20'
+        Description
+        -----------
+        Gets all workspaces under Azure subscription by using Subscription ID
+        Uses specific version of Operational Insights API
+
+        Example Variables
+        -----------------
+        $OMSCon = Get-AutomationConnection -Name 'OMSCon'
+        $SubscriptionId = "3c1d68a5-4064-4522-94e4-e0378165555e"
+        $Token = Get-AADToken -OMSConnection $OMSCon
+        
 
     .EXAMPLE
-        $OMSCon = Get-AutomationConnection -Name 'OMSCon'
-        $Token = Get-AADToken -OMSConnection $OMSCon
         Get-OMSWorkspace -OMSConnection $OMSCon -Token $Token
+        Description
+        -----------
+        Gets all workspaces under Azure subscription by using information from asset of type connection in OMS Automation
 
-    .EXAMPLE
+        Example Variables
+        -----------------
         $OMSCon = Get-AutomationConnection -Name 'OMSCon'
         $Token = Get-AADToken -OMSConnection $OMSCon
+        
+
+    .EXAMPLE
         Get-OMSWorkspace -OMSConnection $OMSCon -Token $Token -APIVersion '2015-03-20'
+        Description
+        -----------
+        Gets all workspaces under Azure subscription by using information from asset of type connection in OMS Automation
+        Uses specific version of Operational Insights API
+
+        Example Variables
+        -----------------
+        $OMSCon = Get-AutomationConnection -Name 'OMSCon'
+        $Token = Get-AADToken -OMSConnection $OMSCon
 
     .OUTPUTS
         System.Object. Returns array of objects. Each object
@@ -255,7 +305,7 @@ PARAM (
     $VerboseMessage = (Get-Date -Format HH:mm:ss).ToString() + ' - Web Request Status code: ' + $result.StatusCode
         Write-Verbose `
              -Message $VerboseMessage 
-    #endergion
+    #endregion
 
     if($result.StatusCode -ge 200 -and $result.StatusCode -le 399)
     {
@@ -301,7 +351,8 @@ Function Get-OMSResourceGroup {
         Get Azure Resource Group where there is OMS
         workspace resource.
         The cmdlet assumes that your OMS resource Groups
-        has 'OI-Default-' in its name.
+        has 'OI-Default-' in its name. This cmdlet is 
+        scheduled to be depricated.
 
     .DESCRIPTION
         Get Azure Resource Group where there is OMS
@@ -390,7 +441,7 @@ PARAM (
         }
 
         #region Warning
-        $WarningMessage = 'This cmdlet returns OMS resource groups that have OI-Default- in its name.'
+        $WarningMessage = 'This cmdlet returns OMS resource groups that have OI-Default- in its name. This cmdlet is scheduled to be depricated.'
         Write-Warning `
             -Message $WarningMessage
         #endregion
@@ -523,29 +574,21 @@ Function Get-OMSSavedSearch {
         Azure Resource provider.
 
     .EXAMPLE
-        # Gets Saved Searches from OMS. Returns results.
-        $OMSCon = Get-AutomationConnection -Name 'OMSCon'
-        $Token = Get-AADToken -OMSConnection $OMSCon
-        $subscriptionId = "3c1d68a5-4064-4522-94e4-e0378165555e"
-        $ResourceGroupName = "oi-default-east-us"
-        $OMSWorkspace = "Test"	
         $OMSSS=Get-OMSSavedSearch -SubscriptionID $subscriptionId -ResourceGroupName $ResourceGroupName  -OMSWorkspaceName $OMSWorkspace -Token $Token
-        $OMSSS[0].ID
-        $OMSSS[0].etag
-        $OMSSS[0].properties
-        $OMSSS[0].properties.Category
-        $OMSSS[0].properties.DisplayName
-        $OMSSS[0].properties.Query
-        $OMSSS[0].properties.Version
+        Description
+        -----------
+        Gets Saved Searches from OMS
 
-    .EXAMPLE
-        # Gets Saved Searches from OMS. Returns results.
+        Example Variables
+        -----------------
         $OMSCon = Get-AutomationConnection -Name 'OMSCon'
         $Token = Get-AADToken -OMSConnection $OMSCon
         $subscriptionId = "3c1d68a5-4064-4522-94e4-e0378165555e"
         $ResourceGroupName = "oi-default-east-us"
         $OMSWorkspace = "Test"	
-        $OMSSS=Get-OMSSavedSearch -SubscriptionID $subscriptionId -ResourceGroupName $ResourceGroupName  -OMSWorkspaceName $OMSWorkspace -Token $Token -APIVersion '2015-03-20'
+        
+        Example Output
+        --------------
         $OMSSS[0].ID
         $OMSSS[0].etag
         $OMSSS[0].properties
@@ -555,10 +598,85 @@ Function Get-OMSSavedSearch {
         $OMSSS[0].properties.Version
 
     .EXAMPLE
-        # Gets Saved Searches from OMS. Returns results.
+        $OMSSS=Get-OMSSavedSearch -SubscriptionID $subscriptionId -ResourceGroupName $ResourceGroupName  -OMSWorkspaceName $OMSWorkspace -Token $Token -APIVersion '2015-03-20'
+        Description
+        -----------
+        Gets Saved Searches from OMS.
+        Uses specific version of Operational Insights API
+
+        Example Variables
+        -----------------
+        $OMSCon = Get-AutomationConnection -Name 'OMSCon'
+        $Token = Get-AADToken -OMSConnection $OMSCon
+        $subscriptionId = "3c1d68a5-4064-4522-94e4-e0378165555e"
+        $ResourceGroupName = "oi-default-east-us"
+        $OMSWorkspace = "Test"	
+        
+        Example Output
+        --------------
+        $OMSSS[0].ID
+        $OMSSS[0].etag
+        $OMSSS[0].properties
+        $OMSSS[0].properties.Category
+        $OMSSS[0].properties.DisplayName
+        $OMSSS[0].properties.Query
+        $OMSSS[0].properties.Version
+
+    .EXAMPLE
+        $OMSSS = Get-OMSSavedSearch -OMSConnection $OMSCon -Token $Token
+        Description
+        -----------
+        Gets Saved Searches from OMS by using information from asset of type connection in OMS Automation
+
+        Example Variables
+        -----------------
         $OMSCon = Get-AutomationConnection -Name 'OMSCon'
         $Token = Get-AADToken -OMSConnection $OMSCon	
-        $OMSSS = Get-OMSSavedSearch -OMSConnection $OMSCon -Token $Token
+        
+        Example Output
+        --------------
+        $OMSSS[0].ID
+        $OMSSS[0].etag
+        $OMSSS[0].properties
+        $OMSSS[0].properties.Category
+        $OMSSS[0].properties.DisplayName
+        $OMSSS[0].properties.Query
+        $OMSSS[0].properties.Version
+
+    .EXAMPLE
+        $OMSSS = Get-OMSSavedSearch -OMSConnection $OMSCon -Token $Token -QueryName 'SavedQueryName'
+        Description
+        -----------
+        Gets specific Saved Search from OMS by using information from asset of type connection in OMS Automation
+
+        Example Variables
+        -----------------
+        $OMSCon = Get-AutomationConnection -Name 'OMSCon'
+        $Token = Get-AADToken -OMSConnection $OMSCon	
+        
+        Example Output
+        --------------
+        $OMSSS[0].ID
+        $OMSSS[0].etag
+        $OMSSS[0].properties
+        $OMSSS[0].properties.Category
+        $OMSSS[0].properties.DisplayName
+        $OMSSS[0].properties.Query
+        $OMSSS[0].properties.Version
+
+    .EXAMPLE
+        $OMSSS = Get-OMSSavedSearch -OMSConnection $OMSCon -Token $Token -QueryName 'SavedQueryName1','SavedQueryName2'
+        Description
+        -----------
+        Gets specific Saved Searches from OMS by using information from asset of type connection in OMS Automation
+
+        Example Variables
+        -----------------
+        $OMSCon = Get-AutomationConnection -Name 'OMSCon'
+        $Token = Get-AADToken -OMSConnection $OMSCon	
+        
+        Example Output
+        --------------
         $OMSSS[0].ID
         $OMSSS[0].etag
         $OMSSS[0].properties
@@ -655,7 +773,7 @@ PARAM (
     $VerboseMessage = (Get-Date -Format HH:mm:ss).ToString() + ' - Web Request Status code: ' + $result.StatusCode
         Write-Verbose `
              -Message $VerboseMessage 
-    #endergion
+    #endregion
 
     if ($result.StatusCode -ge 200 -and $result.StatusCode -le 399)
     {
@@ -751,7 +869,9 @@ Function Remove-OMSSavedSearch {
         Deletes OMS Saved Search.
 
     .DESCRIPTION
-        Deletes OMS Saved Search.
+        Deletes OMS Saved Search. Deleted saved search
+        does not immediately dissappears from OMS portal.
+        It may take a couple of minutes until it dissappears.
 
     .PARAMETER Token
         Token aquired from Get-AADToken cmdlet.
@@ -781,41 +901,60 @@ Function Remove-OMSSavedSearch {
         Azure Resource provider.
 
     .EXAMPLE
-        # Gets Saved Searches from OMS. Returns results.
+        Remove-OMSSavedSearch -SubscriptionID $subscriptionId -ResourceGroupName $ResourceGroupName  -OMSWorkspaceName $OMSWorkspace -Token $Token -QueryName 'SavedQueryName'
+        Description
+        -----------
+        Removes specific Saved Search by name from OMS
+
+        Example Variables
+        -----------------
         $OMSCon = Get-AutomationConnection -Name 'OMSCon'
         $Token = Get-AADToken -OMSConnection $OMSCon
         $subscriptionId = "3c1d68a5-4064-4522-94e4-e0378165555e"
         $ResourceGroupName = "oi-default-east-us"
         $OMSWorkspace = "Test"	
-        Remove-OMSSavedSearch -SubscriptionID $subscriptionId -ResourceGroupName $ResourceGroupName  -OMSWorkspaceName $OMSWorkspace -Token $Token -QueryName 'SavedQueryName'
         
     .EXAMPLE
-        # Gets Saved Searches from OMS. Returns results.
+        Remove-OMSSavedSearch -SubscriptionID $subscriptionId -ResourceGroupName $ResourceGroupName  -OMSWorkspaceName $OMSWorkspace -Token $Token -QueryName 'SavedQueryName' -APIVersion '2015-03-20'
+        Description
+        -----------
+        Removes specific Saved Search by name from OMS
+        Uses specific version of Operational Insights API
+
+        Example Variables
+        -----------------
         $OMSCon = Get-AutomationConnection -Name 'OMSCon'
         $Token = Get-AADToken -OMSConnection $OMSCon
         $subscriptionId = "3c1d68a5-4064-4522-94e4-e0378165555e"
         $ResourceGroupName = "oi-default-east-us"
         $OMSWorkspace = "Test"
-        Remove-OMSSavedSearch -SubscriptionID $subscriptionId -ResourceGroupName $ResourceGroupName  -OMSWorkspaceName $OMSWorkspace -Token $Token -QueryName 'SavedQueryName' -APIVersion '2015-03-20'
-         
 
     .EXAMPLE
-        # Gets Saved Searches from OMS. Returns results.
+        Remove-OMSSavedSearch -OMSConnection $OMSCon -Token $Token -QueryName 'SavedQueryName'
+        Description
+        -----------
+        Removes specific Saved Search by name from OMS  by using information from asset of type connection in OMS Automation
+
+        Example Variables
+        -----------------
         $OMSCon = Get-AutomationConnection -Name 'OMSCon'
         $Token = Get-AADToken -OMSConnection $OMSCon	
-        Remove-OMSSavedSearch -OMSConnection $OMSCon -Token $Token -QueryName 'SavedQueryName'
         
     .EXAMPLE
-        # Gets Saved Searches from OMS. Returns results.
+        Remove-OMSSavedSearch -OMSConnection $OMSCon -Token $Token -QueryName 'SavedQueryName' -APIVersion '2015-03-20'
+        Description
+        -----------
+        Removes specific Saved Search by name from OMS  by using information from asset of type connection in OMS Automation
+        Uses specific version of Operational Insights API
+
+        Example Variables
+        -----------------
         $OMSCon = Get-AutomationConnection -Name 'OMSCon'
         $Token = Get-AADToken -OMSConnection $OMSCon
-        Remove-OMSSavedSearch -OMSConnection $OMSCon -Token $Token -QueryName 'SavedQueryName' -APIVersion '2015-03-20'
-         
-        
+
     .OUTPUTS
         No Output.
-       
-
+]
 #>
 [CmdletBinding(DefaultParameterSetName='DefaultParameterSet')]
 [OutputType([object])]
@@ -928,7 +1067,7 @@ PARAM (
         Write-Verbose `
              -Message $VerboseMessage 
     Write-Verbose $result
-    #endergion
+    #endregion
 
     if ($result.StatusCode -ge 200 -and $result.StatusCode -le 399)
     {
@@ -992,21 +1131,34 @@ Function New-OMSSavedSearch {
         Azure Resource provider.
 
     .EXAMPLE
-        # Executes Search Query against OMS. Returns results from query.
+        New-OMSSavedSearch -SubscriptionID $subscriptionId -ResourceGroupName $ResourceGroupName  -OMSWorkspaceName $OMSWorkspace -Query $Query -QueryName 'Restarted Servers' -Category 'Windows Server' -Token $Token  -APIVersion '2015-03-20'
+        Description
+        -----------
+        Creates new saved search query 
+        Uses specific version of Operational Insights API
+
+        Example Variables
+        -----------------
         $OMSCon = Get-AutomationConnection -Name 'OMSCon'
         $Token = Get-AADToken -OMSConnection $OMSCon
         $subscriptionId = "3c1d68a5-4064-4522-94e4-e0378165555e"
         $ResourceGroupName = "oi-default-east-us"
         $OMSWorkspace = "Test"	
         $Query = "shutdown Type=Event EventLog=System Source=User32 EventID=1074 | Select TimeGenerated,Computer"
-        New-OMSSavedSearch -SubscriptionID $subscriptionId -ResourceGroupName $ResourceGroupName  -OMSWorkspaceName $OMSWorkspace -Query $Query -QueryName 'Restarted Servers' -Category 'Windows Server' -Token $Token  -APIVersion '2015-03-20'
+        
 
      .EXAMPLE
-        # Executes Search Query against OMS. Returns results from query.
+        New-OMSSavedSearch -OMSConnection $OMSCon -Query $Query -QueryName 'Restarted Servers' -Category 'Windows Server' -Token $Token
+        Description
+        -----------
+        Creates new saved search query by using information from asset of type connection in OMS Automation
+        Uses specific version of Operational Insights API
+
+        Example Variables
+        -----------------
         $OMSCon = Get-AutomationConnection -Name 'OMSCon'
         $Token = Get-AADToken -OMSConnection $OMSCon
         $Query = "shutdown Type=Event EventLog=System Source=User32 EventID=1074 | Select TimeGenerated,Computer"
-        New-OMSSavedSearch -OMSConnection $OMSCon -Query $Query -QueryName 'Restarted Servers' -Category 'Windows Server' -Token $Token
 
     .OUTPUTS
         No Output.
@@ -1102,7 +1254,7 @@ PARAM (
         
         $body = $QObj | Convertto-Json `
                             -ErrorAction Stop
-        #Write-verbose $body
+
         If ($PSCmdlet.ShouldProcess("Query: $QueryName")) 
         {
             $result = Invoke-WebRequest `
@@ -1129,7 +1281,7 @@ PARAM (
     $VerboseMessage = (Get-Date -Format HH:mm:ss).ToString() + ' - Web Request Status code: ' + $result.StatusCode
         Write-Verbose `
              -Message $VerboseMessage 
-    #endergion
+    #endregion
 
     if ($result.StatusCode -ge 200 -and $result.StatusCode -le 399)
     {
@@ -1219,15 +1371,30 @@ Function Invoke-OMSSavedSearch {
         Azure Resource provider.
 
     .EXAMPLE
-        # Gets Saved Searches from OMS. Returns results.
+        Invoke-OMSSavedSearch -SubscriptionID $subscriptionId -ResourceGroupName $ResourceGroupName  -OMSWorkspaceName $OMSWorkspace -Token $Token -QueryName 'SavedQueryName'
+        Description
+        -----------
+        Executes Saved Search against OMS
+        Returns results from the saved search
+
+        Example Variables
+        -----------------
         $OMSCon = Get-AutomationConnection -Name 'OMSCon'
         $Token = Get-AADToken -OMSConnection $OMSCon
         $subscriptionId = "3c1d68a5-4064-4522-94e4-e0378165555e"
         $ResourceGroupName = "oi-default-east-us"
         $OMSWorkspace = "Test"	
-        Invoke-OMSSavedSearch -SubscriptionID $subscriptionId -ResourceGroupName $ResourceGroupName  -OMSWorkspaceName $OMSWorkspace -Token $Token -QueryName 'SavedQueryName'
         
     .EXAMPLE
+        Invoke-OMSSearchQuery -SubscriptionID $subscriptionId -ResourceGroupName $ResourceGroupName  -OMSWorkspaceName $OMSWorkspace -Token $Token -QueryName 'SavedQueryName' -Top $NumberOfResults -Start $StartTime -End $EndTime
+        Description
+        -----------
+        Executes Saved Search against OMS
+        Specify End and Start date as well as maximum number of returned reuslts
+        Returns results from the saved search
+
+        Example Variables
+        -----------------
         # Gets Saved Searches from OMS. Returns results.
         $OMSCon = Get-AutomationConnection -Name 'OMSCon'
         $Token = Get-AADToken -OMSConnection $OMSCon
@@ -1237,39 +1404,64 @@ Function Invoke-OMSSavedSearch {
         $NumberOfResults = 150
         $StartTime = (((get-date)).AddHours(-6).ToUniversalTime()).ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
         $EndTime = ((get-date).ToUniversalTime()).ToString("yyyy-MM-ddTHH:mm:ss.fffZ")	
-        Invoke-OMSSearchQuery -SubscriptionID $subscriptionId -ResourceGroupName $ResourceGroupName  -OMSWorkspaceName $OMSWorkspace -Token $Token -QueryName 'SavedQueryName' -Top $NumberOfResults -Start $StartTime -End $EndTime
-         
+
     .EXAMPLE
-        # Gets Saved Searches from OMS. Returns results.
+        Invoke-OMSSavedSearch -SubscriptionID $subscriptionId -ResourceGroupName $ResourceGroupName  -OMSWorkspaceName $OMSWorkspace -Token $Token -QueryName 'SavedQueryName' -APIVersion '2015-03-20'
+        Description
+        -----------
+        Executes Saved Search against OMS
+        Uses specific version of Operational Insights API
+        Returns results from the saved search
+
+        Example Variables
+        -----------------
         $OMSCon = Get-AutomationConnection -Name 'OMSCon'
         $Token = Get-AADToken -OMSConnection $OMSCon
         $subscriptionId = "3c1d68a5-4064-4522-94e4-e0378165555e"
         $ResourceGroupName = "oi-default-east-us"
         $OMSWorkspace = "Test"
-        Invoke-OMSSavedSearch -SubscriptionID $subscriptionId -ResourceGroupName $ResourceGroupName  -OMSWorkspaceName $OMSWorkspace -Token $Token -QueryName 'SavedQueryName' -APIVersion '2015-03-20'
-         
 
     .EXAMPLE
-        # Gets Saved Searches from OMS. Returns results.
+        Invoke-OMSSavedSearch -OMSConnection $OMSCon -Token $Token -QueryName 'SavedQueryName'
+        Description
+        -----------
+        Executes Saved Search against OMS  by using information from asset of type connection in OMS Automation
+        Returns results from the saved search
+
+        Example Variables
+        -----------------
         $OMSCon = Get-AutomationConnection -Name 'OMSCon'
         $Token = Get-AADToken -OMSConnection $OMSCon	
         Invoke-OMSSavedSearch -OMSConnection $OMSCon -Token $Token -QueryName 'SavedQueryName'
         
     .EXAMPLE
-        # Gets Saved Searches from OMS. Returns results.
+        Invoke-OMSSearchQuery -OMSConnection $OMSCon -Token $Token -QueryName 'SavedQueryName' -Top $NumberOfResults -Start $StartTime -End $EndTime
+        Description
+        -----------
+        Executes Saved Search against OMS  by using information from asset of type connection in OMS Automation
+        Specify End and Start date as well as maximum number of returned reuslts
+        Returns results from the saved search
+        
+        Example Variables
+        -----------------
         $OMSCon = Get-AutomationConnection -Name 'OMSCon'
         $Token = Get-AADToken -OMSConnection $OMSCon
         $NumberOfResults = 150
         $StartTime = (((get-date)).AddHours(-6).ToUniversalTime()).ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
         $EndTime = ((get-date).ToUniversalTime()).ToString("yyyy-MM-ddTHH:mm:ss.fffZ")	
-        Invoke-OMSSearchQuery -OMSConnection $OMSCon -Token $Token -QueryName 'SavedQueryName' -Top $NumberOfResults -Start $StartTime -End $EndTime
          
     .EXAMPLE
-        # Gets Saved Searches from OMS. Returns results.
+        Invoke-OMSSavedSearch -OMSConnection $OMSCon -Token $Token -QueryName 'SavedQueryName' -APIVersion '2015-03-20'
+        Description
+        -----------
+        Executes Saved Search against OMS  by using information from asset of type connection in OMS Automation
+        Uses specific version of Operational Insights API
+        Returns results from the saved search
+
+        Example Variables
+        -----------------
         $OMSCon = Get-AutomationConnection -Name 'OMSCon'
         $Token = Get-AADToken -OMSConnection $OMSCon
-        Invoke-OMSSavedSearch -OMSConnection $OMSCon -Token $Token -QueryName 'SavedQueryName' -APIVersion '2015-03-20'
-         
         
     .OUTPUTS
         System.Object. Returns array of objects. Each object
@@ -1483,30 +1675,52 @@ Function Invoke-OMSSearchQuery {
         Azure Resource provider.
 
     .EXAMPLE
-        # Executes Search Query against OMS. Returns results from query.
-        $OMSCon = Get-AutomationConnection -Name 'OMSCon'
-        $Token = Get-AADToken -OMSConnection $OMSCon
-        $subscriptionId = "3c1d68a5-4064-4522-94e4-e0378165555e"
-        $ResourceGroupName = "oi-default-east-us"
-        $OMSWorkspace = "Test"	
-        $Query = "shutdown Type=Event EventLog=System Source=User32 EventID=1074 | Select TimeGenerated,Computer"
-        $NumberOfResults = 150
-        $StartTime = (((get-date)).AddHours(-6).ToUniversalTime()).ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
-        $EndTime = ((get-date).ToUniversalTime()).ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
         Invoke-OMSSearchQuery -SubscriptionID $subscriptionId -ResourceGroupName $ResourceGroupName  -OMSWorkspaceName $OMSWorkspace -Query $Query -Token $Token -Top $NumberOfResults -Start $StartTime -End $EndTime -APIVersion '2015-03-20'
+        Description
+        -----------
+        Executes query against OMS
+        Uses specific version of Operational Insights API
+        Specify End and Start date as well as maximum number of returned reuslts
+        Returns results from the query
 
-     .EXAMPLE
-        # Executes Search Query against OMS. Returns results from query.
+        Example Variables
+        -----------------
         $OMSCon = Get-AutomationConnection -Name 'OMSCon'
         $Token = Get-AADToken -OMSConnection $OMSCon
         $subscriptionId = "3c1d68a5-4064-4522-94e4-e0378165555e"
         $ResourceGroupName = "oi-default-east-us"
         $OMSWorkspace = "Test"	
         $Query = "shutdown Type=Event EventLog=System Source=User32 EventID=1074 | Select TimeGenerated,Computer"
+        $NumberOfResults = 150
+        $StartTime = (((get-date)).AddHours(-6).ToUniversalTime()).ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
+        $EndTime = ((get-date).ToUniversalTime()).ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
+
+     .EXAMPLE
         Invoke-OMSSearchQuery -SubscriptionID $subscriptionId -ResourceGroupName $ResourceGroupName  -OMSWorkspaceName $OMSWorkspace -Query $Query -Token $Token
+        Description
+        -----------
+        Executes query against OMS
+        Returns results from the query
+
+        Example Variables
+        -----------------
+        $OMSCon = Get-AutomationConnection -Name 'OMSCon'
+        $Token = Get-AADToken -OMSConnection $OMSCon
+        $subscriptionId = "3c1d68a5-4064-4522-94e4-e0378165555e"
+        $ResourceGroupName = "oi-default-east-us"
+        $OMSWorkspace = "Test"	
+        $Query = "shutdown Type=Event EventLog=System Source=User32 EventID=1074 | Select TimeGenerated,Computer"
         
      .EXAMPLE
-        # Executes Search Query against OMS. Returns results from query.
+        Invoke-OMSSearchQuery -SubscriptionID $subscriptionId -ResourceGroupName $ResourceGroupName  -OMSWorkspaceName $OMSWorkspace -Query $Query -Token $Token -Top $NumberOfResults -Start $StartTime -End $EndTime
+        Description
+        -----------
+        Executes query against OMS
+        Specify End and Start date as well as maximum number of returned reuslts
+        Returns results from the query
+
+        Example Variables
+        -----------------
         $OMSCon = Get-AutomationConnection -Name 'OMSCon'
         $Token = Get-AADToken -OMSConnection $OMSCon
         $subscriptionId = "3c1d68a5-4064-4522-94e4-e0378165555e"
@@ -1516,34 +1730,54 @@ Function Invoke-OMSSearchQuery {
         $NumberOfResults = 150
         $StartTime = (((get-date)).AddHours(-6).ToUniversalTime()).ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
         $EndTime = ((get-date).ToUniversalTime()).ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
-        Invoke-OMSSearchQuery -SubscriptionID $subscriptionId -ResourceGroupName $ResourceGroupName  -OMSWorkspaceName $OMSWorkspace -Query $Query -Token $Token -Top $NumberOfResults -Start $StartTime -End $EndTime
 
      .EXAMPLE
-        # Executes Search Query against OMS. Returns results from query.
+        Invoke-OMSSearchQuery -OMSConnection $OMSCon -Query $Query -Token $Token -Top $NumberOfResults -Start $StartTime -End $EndTime -APIVersion '2015-03-20'
+        Description
+        -----------
+        Executes query against OMS by using information from asset of type connection in OMS Automation
+        Uses specific version of Operational Insights API
+        Specify End and Start date as well as maximum number of returned reuslts
+        Returns results from the query
+
+        Example Variables
+        -----------------
         $OMSCon = Get-AutomationConnection -Name 'OMSCon'
         $Token = Get-AADToken -OMSConnection $OMSCon
         $Query = "shutdown Type=Event EventLog=System Source=User32 EventID=1074 | Select TimeGenerated,Computer"
         $NumberOfResults = 150
         $StartTime = (((get-date)).AddHours(-6).ToUniversalTime()).ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
         $EndTime = ((get-date).ToUniversalTime()).ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
-        Invoke-OMSSearchQuery -OMSConnection $OMSCon -Query $Query -Token $Token -Top $NumberOfResults -Start $StartTime -End $EndTime -APIVersion '2015-03-20'
 
      .EXAMPLE
-        # Executes Search Query against OMS. Returns results from query.
+        Invoke-OMSSearchQuery -OMSConnection $OMSCon -Query $Query -Token $Token
+        Description
+        -----------
+        Executes query against OMS by using information from asset of type connection in OMS Automation
+        Returns results from the query
+
+        Example Variables
+        -----------------
         $OMSCon = Get-AutomationConnection -Name 'OMSCon'
         $Token = Get-AADToken -OMSConnection $OMSCon
         $Query = "shutdown Type=Event EventLog=System Source=User32 EventID=1074 | Select TimeGenerated,Computer"
-        Invoke-OMSSearchQuery -OMSConnection $OMSCon -Query $Query -Token $Token
         
      .EXAMPLE
-        # Executes Search Query against OMS. Returns results from query.
+        Invoke-OMSSearchQuery -OMSConnection $OMSCon -Query $Query -Token $Token -Top $NumberOfResults -Start $StartTime -End $EndTime
+        Description
+        -----------
+        Executes query against OMS by using information from asset of type connection in OMS Automation
+        Specify End and Start date as well as maximum number of returned reuslts
+        Returns results from the query
+
+        Example Variables
+        -----------------
         $OMSCon = Get-AutomationConnection -Name 'OMSCon'
         $Token = Get-AADToken -OMSConnection $OMSCon
         $Query = "shutdown Type=Event EventLog=System Source=User32 EventID=1074 | Select TimeGenerated,Computer"
         $NumberOfResults = 150
         $StartTime = (((get-date)).AddHours(-6).ToUniversalTime()).ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
         $EndTime = ((get-date).ToUniversalTime()).ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
-        Invoke-OMSSearchQuery -OMSConnection $OMSCon -Query $Query -Token $Token -Top $NumberOfResults -Start $StartTime -End $EndTime
 
     .OUTPUTS
         System.Object. Returns array of objects. Each object
@@ -1700,7 +1934,7 @@ PARAM (
     $VerboseMessage = (Get-Date -Format HH:mm:ss).ToString() + ' - Web Request Status code: ' + $result.StatusCode
         Write-Verbose `
              -Message $VerboseMessage 
-    #endergion
+    #endregion
 
     if($result.StatusCode -ge 200 -and $result.StatusCode -le 399)
     {
@@ -1746,6 +1980,396 @@ PARAM (
     }
     
     return $return
+}
+Function Export-OMSSavedSearch {
+<# 
+    .SYNOPSIS
+        Exports saved searches from OMS workspace to
+        file in json format.
+
+    .DESCRIPTION
+        Exports saved searches from OMS workspace to
+        file in json format.
+
+    .PARAMETER Token
+        Token aquired from Get-AADToken cmdlet.
+
+    .PARAMETER SubscriptionID
+        Azure Subscription ID where the OMS workspace
+        is located.
+
+    .PARAMETER ResourceGroupName
+        Azure Resource Group Name where the OMS 
+        workspace is located.
+
+    .PARAMETER OMSWorkspaceName
+        Name of the OMS workspace.
+
+    .PARAMETER OMSConnection
+        Object that contains all needed parameters for working
+        with OMSSearch Module. You can create such object in 
+        OMS Automation as connection asset.
+
+    .PARAMETER FileName
+        The name of the file to which the saved
+        searches will be exported.
+
+    .PARAMETER OutputPath
+        The location to the folder where the
+        exported saved search will saved.
+
+    .PARAMETER QueryName
+        Query name/names of the saved searches
+        to be exported.
+
+    .PARAMETER APIVersion
+        Api version for microsoft.operationalinsights
+        Azure Resource provider.
+
+    .EXAMPLE
+        Export-OMSSavedSearch -SubscriptionID $subscriptionId -ResourceGroupName $ResourceGroupName  -OMSWorkspaceName $OMSWorkspace -QueryName 'Restarted Servers','All_alerts' -FileName MySavedSearches -OutputPath 'D:\OMS\' -Token $Token  -APIVersion '2015-03-20'
+        Description
+        -----------
+        Exports two saved searches into file MySavedSearches.json located in D:\OMS\
+        Uses specific version of Operational Insights API
+
+        Example Variables
+        -----------------
+        $Token = Get-AADToken -Credential (Get-Credential) -TenantID 'eeb91fce-4be2-4a30-aad8-39e05fefde0'
+        $subscriptionId = "3c1d68a5-4064-4522-94e4-e0378165555e"
+        $ResourceGroupName = "oi-default-east-us"
+        $OMSWorkspace = "Test"	
+
+     .EXAMPLE
+        Export-OMSSavedSearch -SubscriptionID $subscriptionId -ResourceGroupName $ResourceGroupName  -OMSWorkspaceName $OMSWorkspace -FileName MySavedSearches -OutputPath 'D:\OMS\' -Token $Token
+        Description
+        -----------
+        Exports all saved searches from OMS workspace
+        Saved searches are exported to file MySavedSearches.json in folder D:\OMS\
+        
+        Example Variables
+        -----------------
+        $subscriptionId = "3c1d68a5-4064-4522-94e4-e0378165555e"
+        $ResourceGroupName = "oi-default-east-us"
+        $OMSWorkspace = "Test"
+        $Token = Get-AADToken -Credential (Get-Credential) -TenantID 'eeb91fce-4be2-4a30-aad8-39e05fefde0'
+
+    .OUTPUTS
+        System.Object. Returns object with the location 
+        of the file where the exported saved searches are
+        saved.
+
+#>
+[CmdletBinding(DefaultParameterSetName='DefaultParameterSet')]
+[OutputType([object])]
+PARAM (
+        [Parameter(ParameterSetName='DefaultParameterSet',Position=0,Mandatory=$true)]
+        [Parameter(ParameterSetName='OMSConnection',Position=0,Mandatory=$true)]
+        [String]$Token,
+
+        [Parameter(ParameterSetName='OMSConnection',Position=1,Mandatory=$true)]
+        [Alias('Connection','c')]
+        [Object]$OMSConnection,
+
+        [Parameter(ParameterSetName='DefaultParameterSet',Position=1,Mandatory=$true)]
+        [ValidateScript({
+            try 
+            {
+                [System.Guid]::Parse($_) | Out-Null
+                $true
+            } 
+            catch 
+            {
+                $false
+            }
+        })]
+        [string]$SubscriptionID,
+
+        [Parameter(ParameterSetName='DefaultParameterSet',Position=2,Mandatory=$true)]
+        [String]$ResourceGroupName,
+
+        [Parameter(ParameterSetName='DefaultParameterSet',Position=3,Mandatory=$true)]
+        [String]$OMSWorkspaceName,
+
+        [Parameter(ParameterSetName='OMSConnection',Position=4,Mandatory=$true)]
+        [Parameter(ParameterSetName='DefaultParameterSet',Position=4,Mandatory=$true)]
+        [String]$FileName,
+
+        [Parameter(ParameterSetName='DefaultParameterSet',Position=5,Mandatory=$true)]
+        [Parameter(ParameterSetName='OMSConnection',Position=5,Mandatory=$true)]
+        [ValidateScript({Test-Path -Path $_ -PathType Container})]
+        [String]$OutputPath,
+
+        [Parameter(ParameterSetName='DefaultParameterSet',Position=6,Mandatory=$false)]
+        [Parameter(ParameterSetName='OMSConnection',Position=6,Mandatory=$false)]
+        [string[]]$QueryName,
+
+        [Parameter(ParameterSetName='DefaultParameterSet',Position=7,Mandatory=$false)]
+        [Parameter(ParameterSetName='OMSConnection',Position=7,Mandatory=$false)]
+        [String]$APIVersion='2015-03-20'
+
+    )
+    Try
+    {
+        If ($OMSConnection)
+	    {
+	        $SubscriptionID    = $OMSConnection.SubscriptionID
+	        $ResourceGroupName = $OMSConnection.ResourceGroupName
+            $OMSWorkspaceName  = $OMSConnection.WorkSpaceName
+        }
+
+        $OMSSavedSearcParams = @{}
+        $OMSSavedSearcParams.Add('Token', $Token)
+        $OMSSavedSearcParams.Add('SubscriptionID', $SubscriptionID)
+        $OMSSavedSearcParams.Add('ResourceGroupName', $ResourceGroupName)
+        $OMSSavedSearcParams.Add('OMSWorkspaceName', $OMSWorkspaceName)
+        $OMSSavedSearcParams.Add('APIVersion', $APIVersion)
+        If ([string]::IsNullOrEmpty($QueryName) -eq $false)
+        {
+            $OMSSavedSearcParams.Add('QueryName', $QueryName)
+        }
+    }
+    Catch
+    {
+        $ErrorMessage = 'Failed to construct parameters for Get-OMSSavedSearch.'
+        $ErrorMessage += " `n"
+        $ErrorMessage += 'Error: '
+        $ErrorMessage += $_
+        Write-Error -Message $ErrorMessage `
+                    -ErrorAction Stop
+    }
+    
+
+    $SavedSearchObj = Get-OMSSavedSearch  `
+                    @OMSSavedSearcParams `
+                    -ErrorAction Stop
+    
+    Try
+    {
+        $savedSearchArray = @()
+        foreach ($SavedSearch in $SavedSearchObj)
+        {
+            $SavedSearchCustObj = `
+               [pscustomobject]@{'QueryName' = $SavedSearch.properties.DisplayName;
+                                 'Category' = $SavedSearch.properties.Category;
+                                 'Query'    = $SavedSearch.properties.Query }
+            $savedSearchArray += $SavedSearchCustObj
+        }
+    }
+    Catch
+    {
+        $ErrorMessage = 'Failed to create custom object.'
+        $ErrorMessage += " `n"
+        $ErrorMessage += 'Error: '
+        $ErrorMessage += $_
+        Write-Error -Message $ErrorMessage `
+                    -ErrorAction Stop
+    }
+    
+    Try
+    {
+        $OutputPath = $OutputPath.TrimEnd('\') 
+        $FilePath =  $OutputPath +  '\' + $FileName + '.json'
+        $savedSearchArray | ConvertTo-Json `
+                                -Depth 3 `
+                                -ErrorAction Stop  | `
+                            Out-File `
+                                -FilePath $FilePath `
+                                -Encoding utf8 `
+                                -Force `
+                                -ErrorAction Stop | Out-Null
+        
+        $OutputResult = `
+               [pscustomobject]@{'File' = $FilePath}
+
+    }
+    Catch
+    {
+        $ErrorMessage = 'Failed to convert and save file: ' + $FilePath
+        $ErrorMessage += " `n"
+        $ErrorMessage += 'Error: '
+        $ErrorMessage += $_
+        Write-Error -Message $ErrorMessage `
+                    -ErrorAction Stop
+    }
+    
+    return $OutputResult
+}
+Function Import-OMSSavedSearch {
+<# 
+    .SYNOPSIS
+        Imports saved searches to OMS workspace
+        from json file.
+
+    .DESCRIPTION
+        Imports saved searches to OMS workspace
+        from json file.
+
+    .PARAMETER Token
+        Token aquired from Get-AADToken cmdlet.
+
+    .PARAMETER SubscriptionID
+        Azure Subscription ID where the OMS workspace
+        is located.
+
+    .PARAMETER ResourceGroupName
+        Azure Resource Group Name where the OMS 
+        workspace is located.
+
+    .PARAMETER OMSWorkspaceName
+        Name of the OMS workspace.
+
+    .PARAMETER OMSConnection
+        Object that contains all needed parameters for working
+        with OMSSearch Module. You can create such object in 
+        OMS Automation as connection asset.
+
+    .PARAMETER FilePath
+        Full location to the json file that holds
+        saved searches.
+
+    .PARAMETER APIVersion
+        Api version for microsoft.operationalinsights
+        Azure Resource provider.
+
+    .EXAMPLE
+        Import-OMSSavedSearch -SubscriptionID $subscriptionId -ResourceGroupName $ResourceGroupName  -OMSWorkspaceName $OMSWorkspace -FilePath 'D:\OMS\MySavedSearches.json' -Token $Token  -APIVersion '2015-03-20'
+        Description
+        -----------
+        Imports saved searches to OMS workspace from json file
+        Uses specific version of Operational Insights API
+
+        Example Variables
+        -----------------
+        $Token = Get-AADToken -Credential (Get-Credential) -TenantID 'eeb91fce-4be2-4a30-aad8-39e05fefde0'
+        $subscriptionId = "3c1d68a5-4064-4522-94e4-e0378165555e"
+        $ResourceGroupName = "oi-default-east-us"
+        $OMSWorkspace = "Test"	
+
+    .OUTPUTS
+        System.String. Outputs information for every successfully
+        imported saved search.
+
+#>
+[CmdletBinding(DefaultParameterSetName='DefaultParameterSet')]
+[OutputType([string])]
+PARAM (
+        [Parameter(ParameterSetName='DefaultParameterSet',Position=0,Mandatory=$true)]
+        [Parameter(ParameterSetName='OMSConnection',Position=0,Mandatory=$true)]
+        [String]$Token,
+
+        [Parameter(ParameterSetName='OMSConnection',Position=1,Mandatory=$true)]
+        [Alias('Connection','c')]
+        [Object]$OMSConnection,
+
+        [Parameter(ParameterSetName='DefaultParameterSet',Position=1,Mandatory=$true)]
+        [ValidateScript({
+            try 
+            {
+                [System.Guid]::Parse($_) | Out-Null
+                $true
+            } 
+            catch 
+            {
+                $false
+            }
+        })]
+        [string]$SubscriptionID,
+
+        [Parameter(ParameterSetName='DefaultParameterSet',Position=2,Mandatory=$true)]
+        [String]$ResourceGroupName,
+
+        [Parameter(ParameterSetName='DefaultParameterSet',Position=3,Mandatory=$true)]
+        [String]$OMSWorkspaceName,
+
+        [Parameter(ParameterSetName='OMSConnection',Position=4,Mandatory=$true)]
+        [Parameter(ParameterSetName='DefaultParameterSet',Position=4,Mandatory=$true)]
+        [ValidateScript({Test-Path -Path $_ -PathType Leaf})]
+        [String]$FilePath,
+
+        [Parameter(ParameterSetName='DefaultParameterSet',Position=7,Mandatory=$false)]
+        [Parameter(ParameterSetName='OMSConnection',Position=7,Mandatory=$false)]
+        [String]$APIVersion='2015-03-20'
+
+    )
+
+    If ($OMSConnection)
+    {
+        $SubscriptionID    = $OMSConnection.SubscriptionID
+        $ResourceGroupName = $OMSConnection.ResourceGroupName
+        $OMSWorkspaceName  = $OMSConnection.WorkSpaceName
+    }
+    
+    Try
+    {
+        $SavedSearchObj = Get-Content `
+                        -Path $FilePath `
+                        -Force `
+                        -ErrorAction Stop `
+                        -Encoding UTF8 | `
+                      ConvertFrom-Json `
+                        -ErrorAction Stop
+    }
+    Catch
+    {
+        $ErrorMessage = 'Failed to read and convert from json file: ' + $FilePath
+        $ErrorMessage += " `n"
+        $ErrorMessage += 'Error: '
+        $ErrorMessage += $_
+        Write-Error -Message $ErrorMessage `
+                    -ErrorAction Stop
+    }
+    
+    foreach ($SavedSearch in $SavedSearchObj)
+    {
+        If ([string]::IsNullOrEmpty($SavedSearch.QueryName) -eq $false)
+        {
+            $QueryName = $SavedSearch.QueryName
+        }
+        Else
+        {
+            $ErrorMessage = 'Property QueryName is empty or does not exist.'
+            Write-Error -Message $ErrorMessage `
+                        -ErrorAction Stop
+        }
+    
+        If ([string]::IsNullOrEmpty($SavedSearch.Category) -eq $false)
+        {
+            $Category = $SavedSearch.Category
+        }
+        Else
+        {
+            $ErrorMessage = 'Property Category is empty or does not exist.'
+            Write-Error -Message $ErrorMessage `
+                        -ErrorAction Stop
+        }
+    
+        If ([string]::IsNullOrEmpty($SavedSearch.Query) -eq $false)
+        {
+            $Query = $SavedSearch.Query
+        }
+        Else
+        {
+            $ErrorMessage = 'Property Query is empty or does not exist.'
+            Write-Error -Message $ErrorMessage `
+                        -ErrorAction Stop
+        }
+    
+        New-OMSSavedSearch `
+            -Token $Token `
+            -SubscriptionID $SubscriptionID `
+            -ResourceGroupName $ResourceGroupName `
+            -OMSWorkspaceName $OMSWorkspaceName `
+            -QueryName $QueryName `
+            -Category $Category `
+            -Query $Query `
+            -APIVersion $APIVersion `
+            -ErrorAction Stop | Out-Null
+    
+        $OutputMessage = 'Successfully imported query: ' + $QueryName
+        Write-Output -InputObject $OutputMessage
+        
+    }
 }
 
 

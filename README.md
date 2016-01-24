@@ -23,6 +23,12 @@ Start and End paramteres take the date format in UTC like this "yyyy-MM-ddTHH:mm
 (((get-date)).AddHours(-6).ToUniversalTime()).ToString("yyyy-MM-ddTHH:mm:ss:fffZ")
 
 # Versions
+## 6.1.0
+*   New cmdlet - Export-OMSSavedSearch - You can export saved searches to json file now
+*   New cmdlet - Import-OMSSavedSearch - You can import saved searches from json file now 
+*   Improvements in help and examples
+*   Cmdlet Get-OMSResourceGroup is scheduled to be deprecated because it is searching OMS Resource Groups by specific name like 'OI-Default-'
+
 ## 6.0.0
 *   SMAConnection parameter set changed to OMSConnection in Get-AADToken
 *   IndividualParameter parameter set changed to - DefaultParameterSet - in Get-AADToken
